@@ -110,7 +110,7 @@ The iOS client application is a **modern, native interface** built using **Swift
 
 ```bash
 # 1. Clone the repository
-git clone [repository-url]
+git clone https://github.com/ertekinbatuhan/mobile-auth-kit
 cd FullStack/IOS
 
 # 2. Open Xcode project
