@@ -76,7 +76,6 @@ The iOS client application is a **modern, native interface** built using **Swift
 
 ---
 
-<img width="2843" height="2868" alt="Screenshot 2025-07-25 at 16 11 43" src="" />
 
 ### 🛠️ iOS Technology Stack
 
