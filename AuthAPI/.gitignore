@@ -1,0 +1,128 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+*.log
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+secrets.json
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# HTTP test files with real tokens (but allow template files)
+AuthAPI.http
+
+# App passwords and sensitive configuration
+*password*
+*secret*
+*key*
+
+# Frontend development specs (internal documentation)
+FRONTEND-SPECS.md
+**/FRONTEND-SPECS.md
+
+# Duplicate README in subfolder (main README should be at root)
+AuthAPI/README.md
+
+# GitHub Copilot and AI generated files
+.copilot/
+**/.copilot/
+*copilot*
+*.copilot
+.github/copilot/
+**/.github/copilot/
+
+# Copilot Workspace snapshots and sessions
+.copilot-workspace/
+**/.copilot-workspace/
+.copilotworkspace/
+**/.copilotworkspace/
+copilot-workspace/
+**/copilot-workspace/
+*.copilot-workspace
+**/*.copilot-workspace
+
+# AI Chat history and sessions
+.ai-chat/
+**/.ai-chat/
+*.ai-chat
+**/*.ai-chat
+
+# IntelliCode files
+.intellicode/
+**/.intellicode/
+
+# Temporary AI files
+temp-ai/
+**/temp-ai/
+ai-temp/
+**/ai-temp/
+
+# Package restore
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet v3's project.json files produces more ignorable files
+*.nuget.props
+*.nuget.targets
+
+# Microsoft Azure Publish Settings
+*.PublishSettings
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac desktop service store files
+.DS_Store
+
+# Additional sensitive patterns
+*.backup
+*.bak
+*~
+.swp
+.swo
+*.tmp
+
+# IDE specific files
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.iml
