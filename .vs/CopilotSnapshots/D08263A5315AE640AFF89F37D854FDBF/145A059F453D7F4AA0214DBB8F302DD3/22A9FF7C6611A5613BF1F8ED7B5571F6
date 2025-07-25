@@ -107,7 +107,7 @@ namespace AuthAPI.Controllers
 
             try
             {
-                // URL decode ve + karakteri düzeltmesi
+                // URL decode ve + karakter düzeltmesi
                 var decodedToken = Uri.UnescapeDataString(token);
                 
                 // URL'den gelen + karakteri space'e dönüşen problemi çözelim
