@@ -1,5 +1,4 @@
 
----
 
 <div align="center">
 
@@ -14,7 +13,7 @@
 
 *Native iOS interface built with SwiftUI & MVVM architecture*
 
-[📱 Screenshots](#📱-screenshots) • [⚡ Features](#✨-ios-features) • [🚀 Setup](#🚀-ios-setup--installation) • [🏗️ Architecture](#🏗️-ios-project-structure)
+[📱 Screenshots](#-screenshots) • [⚡ Features](#-ios-features) • [🚀 Setup](#-ios-setup--installation) • [🏗️ Architecture](#️-ios-project-structure)
 
 </div>
 
@@ -37,6 +36,8 @@ The iOS client application is a **modern, native interface** built using **Swift
 </div>
 
 ---
+
+## 📱 Screenshots
 
 <table>
   <tr>
