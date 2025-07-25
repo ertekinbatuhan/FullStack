@@ -231,8 +231,6 @@ namespace AuthAPI.Controllers
             }
 
             try
-            {
-                // Bu endpoint sadece debug için - production'da kaldırın
                 var user = await _authService.GetUserDebugInfo(email);
                 return Ok(user);
             }
