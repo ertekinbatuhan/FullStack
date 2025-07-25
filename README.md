@@ -261,7 +261,7 @@ AuthAPI is an enterprise-ready email-based authentication and authorization serv
 
 ```bash
 # Clone the repository
-git clone [repository-url]
+git clone https://github.com/ertekinbatuhan/mobile-auth-kit
 cd AuthAPI
 
 # Restore dependencies
