@@ -1,4 +1,9 @@
 
+## 📱 iOS Client Application
+
+The iOS client application is built using **SwiftUI** and follows the **MVVM (Model-View-ViewModel)** architecture pattern. It provides a modern, native iOS interface for the AuthAPI backend.
+
+
 <table>
   <tr>
     <th align="center">Sign In Screen</th>
@@ -35,10 +40,6 @@
 </table>
 
 ---
-
-## 📱 iOS Client Application
-
-The iOS client application is built using **SwiftUI** and follows the **MVVM (Model-View-ViewModel)** architecture pattern. It provides a modern, native iOS interface for the AuthAPI backend.
 
 ### 🛠️ iOS Technology Stack
 
