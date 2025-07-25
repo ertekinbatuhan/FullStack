@@ -225,10 +225,7 @@ namespace AuthAPI.Services
                 tokenExpired = user.EmailVerificationTokenExpires < DateTime.UtcNow,
                 currentUtcTime = DateTime.UtcNow,
                 createdAt = user.CreatedAt,
-                // Güvenlik için token'ın sadece ilk ve son 4 karakterini göster
-                tokenPreview = user.EmailVerificationToken?.Length > 8 
-                    ? user.EmailVerificationToken.Substring(0, 4) + "..." + user.EmailVerificationToken.Substring(user.EmailVerificationToken.Length - 4)
-                    : "No token"
+                // Token bilgisi güvenlik nedeniyle debug yanıtından kaldırıldı
             };
         }
 
