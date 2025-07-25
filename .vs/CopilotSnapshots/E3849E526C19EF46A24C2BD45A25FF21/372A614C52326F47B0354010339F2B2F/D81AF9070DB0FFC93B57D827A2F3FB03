@@ -1,0 +1,64 @@
+﻿@AuthAPI_HostAddress = https://localhost:7188
+# Azure Production URL: https://your-app-name.azurewebsites.net
+
+### Register a new user (Valid example)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "john_doe123",
+  "password": "SecurePass123!"
+}
+
+### Register with INVALID username (should fail - special characters)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "john@doe",
+  "password": "SecurePass123!"
+}
+
+### Register with INVALID password (should fail - no special character)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "john_doe123",
+  "password": "SecurePass123"
+}
+
+### Register with SHORT username (should fail - less than 3 characters)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "jo",
+  "password": "SecurePass123!"
+}
+
+### Register with SHORT password (should fail - less than 8 characters)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "john_doe123",
+  "password": "Sec1!"
+}
+
+### Login with valid user
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "john_doe123",  
+  "password": "SecurePass123!"
+}
+
+### Test protected endpoint WITHOUT token (should fail with 401)
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+
+### Test protected endpoint WITH token
+# Replace YOUR_JWT_TOKEN_HERE with actual token from login response
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+Authorization: Bearer YOUR_JWT_TOKEN_HERE

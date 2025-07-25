@@ -1,0 +1,215 @@
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+
+namespace AuthAPI.Services
+{
+    public class EmailService : IEmailService
+    {
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<EmailService> _logger;
+
+        public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
+        {
+            _configuration = configuration;
+            _logger = logger;
+        }
+
+        public async Task SendEmailVerificationAsync(string email, string verificationToken)
+        {
+            var subject = "Email Verification - AuthAPI";
+            var baseUrl = _configuration["AppSettings:BaseUrl"] ?? "https://localhost:7045";
+            
+            // Token'ı URL encode et - + ve / karakterleri için
+            var encodedToken = Uri.EscapeDataString(verificationToken);
+            var verificationLink = $"{baseUrl}/api/auth/verify-email?token={encodedToken}";
+            
+            var htmlBody = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Email Verification</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: #007bff; color: white; padding: 20px; text-align: center; }}
+        .content {{ padding: 20px; background: #f9f9f9; }}
+        .button {{ display: inline-block; padding: 12px 24px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; }}
+        .footer {{ padding: 20px; text-align: center; color: #666; font-size: 12px; }}
+        .debug {{ margin-top: 20px; padding: 10px; background: #e9ecef; border-radius: 5px; font-size: 11px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>🔐 AuthAPI</h1>
+            <h2>Email Verification Required</h2>
+        </div>
+        <div class='content'>
+            <p>Hello!</p>
+            <p>Thank you for registering with AuthAPI. To complete your registration, please verify your email address by clicking the button below:</p>
+            <p style='text-align: center; margin: 30px 0;'>
+                <a href='{verificationLink}' class='button'>Verify Email Address</a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style='word-break: break-all; background: #eee; padding: 10px; border-radius: 5px;'>{verificationLink}</p>
+            <p><strong>This link will expire in 72 hours.</strong></p>
+            <p>If you didn't create an account with us, please ignore this email.</p>
+            <div class='debug'>
+                <strong>Debug Info:</strong><br>
+                Original Token: {verificationToken.Substring(0, Math.Min(10, verificationToken.Length))}...<br>
+                Encoded Token: {encodedToken.Substring(0, Math.Min(10, encodedToken.Length))}...<br>
+                Full Link: <a href='{verificationLink}'>{verificationLink}</a>
+            </div>
+        </div>
+        <div class='footer'>
+            <p>© 2024 AuthAPI. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(email, subject, htmlBody);
+        }
+
+        public async Task SendPasswordResetAsync(string email, string resetToken)
+        {
+            var subject = "Password Reset - AuthAPI";
+            var baseUrl = _configuration["AppSettings:BaseUrl"] ?? "https://localhost:7045";
+            
+            // Token'ı URL encode et - + ve / karakterleri için  
+            var encodedToken = Uri.EscapeDataString(resetToken);
+            
+            // Mobile app için deep link oluştur
+            var mobileDeepLink = $"yourapp://password-reset?token={encodedToken}";
+            
+            // Web için backup link
+            var webResetLink = $"{baseUrl}/api/auth/reset-password?token={encodedToken}";
+            
+            var htmlBody = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Password Reset</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: #dc3545; color: white; padding: 20px; text-align: center; }}
+        .content {{ padding: 20px; background: #f9f9f9; }}
+        .button {{ display: inline-block; padding: 12px 24px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; }}
+        .footer {{ padding: 20px; text-align: center; color: #666; font-size: 12px; }}
+        .token-info {{ margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; }}
+        .mobile-section {{ background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>🔐 AuthAPI</h1>
+            <h2>Password Reset Request</h2>
+        </div>
+        <div class='content'>
+            <p>Hello!</p>
+            <p>We received a request to reset your password. Choose the method below that works best for you:</p>
+            
+            <div class='mobile-section'>
+                <h3>📱 Mobile App Users</h3>
+                <p>If you're using our mobile app, click the button below to open the password reset screen directly in the app:</p>
+                <p style='text-align: center;'>
+                    <a href='{mobileDeepLink}' class='button'>🔓 Reset in Mobile App</a>
+                </p>
+                <p><small>Note: This will only work if you have our mobile app installed.</small></p>
+            </div>
+            
+            <div>
+                <h3>🌐 Web Browser</h3>
+                <p>Alternatively, you can reset your password using the web browser:</p>
+                <p style='text-align: center;'>
+                    <a href='{webResetLink}' class='button'>🔓 Reset in Browser</a>
+                </p>
+            </div>
+            
+            <div class='token-info'>
+                <h3>🔑 Manual Reset Token:</h3>
+                <p style='font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 3px; word-break: break-all;'>{resetToken}</p>
+                <p><strong>Instructions for developers:</strong></p>
+                <ol>
+                    <li>Use the POST /api/auth/reset-password endpoint</li>
+                    <li>Send this token along with your new password</li>
+                    <li>Token expires in 1 hour</li>
+                </ol>
+            </div>
+            
+            <p><strong>⏰ This token will expire in 1 hour.</strong></p>
+            <p>If you didn't request a password reset, please ignore this email. Your password will not be changed.</p>
+        </div>
+        <div class='footer'>
+            <p>© 2024 AuthAPI. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(email, subject, htmlBody);
+        }
+
+        private async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                
+                // From
+                var fromEmail = _configuration["EmailSettings:FromEmail"] ?? throw new InvalidOperationException("FromEmail not configured");
+                var fromName = _configuration["EmailSettings:FromName"] ?? "AuthAPI";
+                message.From.Add(new MailboxAddress(fromName, fromEmail));
+                
+                // To
+                message.To.Add(new MailboxAddress("", toEmail));
+                
+                // Subject
+                message.Subject = subject;
+                
+                // Body
+                var bodyBuilder = new BodyBuilder
+                {
+                    HtmlBody = htmlBody
+                };
+                message.Body = bodyBuilder.ToMessageBody();
+
+                // SMTP settings - Environment Variable öncelikli
+                var smtpHost = _configuration["EmailSettings:SmtpHost"] ?? throw new InvalidOperationException("SmtpHost not configured");
+                var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+                var smtpUsername = _configuration["EmailSettings:SmtpUsername"] ?? throw new InvalidOperationException("SmtpUsername not configured");
+                
+                // Environment Variable'dan şifreyi al, yoksa appsettings'den
+                var smtpPassword = Environment.GetEnvironmentVariable("EmailSettings__SmtpPassword") 
+                    ?? _configuration["EmailSettings:SmtpPassword"] 
+                    ?? throw new InvalidOperationException("SmtpPassword not configured");
+
+                using var client = new SmtpClient();
+                
+                // Connect to SMTP server
+                await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+                
+                // Authenticate
+                await client.AuthenticateAsync(smtpUsername, smtpPassword);
+                
+                // Send email
+                await client.SendAsync(message);
+                
+                // Disconnect
+                await client.DisconnectAsync(true);
+                
+                _logger.LogInformation("Email sent successfully to {Email}", toEmail);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
+                throw;
+            }
+        }
+    }
+}

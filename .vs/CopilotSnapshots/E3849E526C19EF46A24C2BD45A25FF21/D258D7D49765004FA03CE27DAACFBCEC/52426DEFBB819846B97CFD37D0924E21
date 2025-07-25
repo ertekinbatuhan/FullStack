@@ -1,0 +1,109 @@
+﻿using AuthAPI.Data;
+using AuthAPI.Dtos;
+using AuthAPI.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace AuthAPI.Services
+{
+    public class AuthService : IAuthService
+    {
+        private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
+
+        public AuthService(DataContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
+
+        public async Task<string?> Login(UserForLoginDto userForLoginDto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userForLoginDto.Username);
+            if (user == null)
+                return null;
+
+            if (!VerifyPasswordHash(userForLoginDto.Password, user.PasswordHash, user.PasswordSalt))
+                return null;
+
+            string token = CreateToken(user);
+            return token;
+        }
+
+        public async Task<User?> Register(UserForRegisterDto userForRegisterDto)
+        {
+            if (await _context.Users.AnyAsync(u => u.Username == userForRegisterDto.Username))
+                return null;
+
+            CreatePasswordHash(userForRegisterDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            var user = new User
+            {
+                Username = userForRegisterDto.Username,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
+            };
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return computedHash.SequenceEqual(passwordHash);
+            }
+        }
+
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        private string CreateToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+
+            // Get JWT secret from environment variable or configuration
+            var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+                ?? _configuration.GetSection("AppSettings:Token").Value;
+
+            if (string.IsNullOrEmpty(jwtSecret))
+            {
+                throw new InvalidOperationException("JWT secret key is not configured.");
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+        }
+    }
+}

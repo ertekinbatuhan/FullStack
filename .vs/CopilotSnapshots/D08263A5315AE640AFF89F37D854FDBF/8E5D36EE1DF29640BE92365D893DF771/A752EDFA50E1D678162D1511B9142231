@@ -1,0 +1,465 @@
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+
+namespace AuthAPI.Services
+{
+    public class EmailService : IEmailService
+    {
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<EmailService> _logger;
+
+        public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
+        {
+            _configuration = configuration;
+            _logger = logger;
+        }
+
+        public async Task SendEmailVerificationAsync(string email, string verificationToken)
+        {
+            var subject = "🔐 Email Verification Required - AuthAPI";
+            var baseUrl = _configuration["AppSettings:BaseUrl"] ?? "https://localhost:7045";
+            
+            // Token'ı URL encode et - + ve / karakterleri için
+            var encodedToken = Uri.EscapeDataString(verificationToken);
+            var verificationLink = $"{baseUrl}/api/auth/verify-email?token={encodedToken}";
+            
+            var htmlBody = $@"
+<!DOCTYPE html>
+<html lang=""tr"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>Email Verification</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }}
+        
+        .email-container {{
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }}
+        
+        .header::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns=""http://www.w3.org/2000/svg"" viewBox=""0 0 100 100""><circle cx=""50"" cy=""50"" r=""2"" fill=""white"" opacity=""0.1""/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }}
+        
+        @keyframes float {{
+            0% {{ transform: translateY(0px) rotate(0deg); }}
+            100% {{ transform: translateY(-20px) rotate(360deg); }}
+        }}
+        
+        .logo {{
+            font-size: 48px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }}
+        
+        .header h1 {{
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        
+        .header p {{
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            font-weight: 400;
+        }}
+        
+        .content {{
+            padding: 50px 40px;
+            background: #ffffff;
+        }}
+        
+        .welcome-text {{
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }}
+        
+        .description {{
+            font-size: 16px;
+            color: #5a6c7d;
+            margin-bottom: 35px;
+            line-height: 1.8;
+        }}
+        
+        .cta-container {{
+            text-align: center;
+            margin: 40px 0;
+        }}
+        
+        .verify-button {{
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        
+        .verify-button:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }}
+        
+        .alternative-section {{
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 4px solid #667eea;
+        }}
+        
+        .alternative-title {{
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }}
+        
+        .link-box {{
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px dashed #e9ecef;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #667eea;
+        }}
+        
+        .info-box {{
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }}
+        
+        .info-icon {{
+            font-size: 24px;
+            margin-bottom: 10px;
+        }}
+        
+        .info-text {{
+            color: #8b4513;
+            font-weight: 600;
+            font-size: 14px;
+        }}
+        
+        .footer {{
+            background: #2c3e50;
+            color: #95a5a6;
+            padding: 30px;
+            text-align: center;
+        }}
+        
+        .footer-logo {{
+            font-size: 24px;
+            margin-bottom: 15px;
+        }}
+        
+        .footer-text {{
+            font-size: 14px;
+            line-height: 1.6;
+        }}
+        
+        .social-links {{
+            margin: 20px 0;
+        }}
+        
+        .social-links a {{
+            color: #95a5a6;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 18px;
+        }}
+        
+        .debug-info {{
+            background: #f1f3f4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #6c757d;
+        }}
+        
+        .debug-info h4 {{
+            color: #495057;
+            margin-bottom: 10px;
+        }}
+        
+        @media (max-width: 600px) {{
+            .email-container {{
+                margin: 10px;
+                border-radius: 15px;
+            }}
+            
+            .header {{
+                padding: 30px 20px;
+            }}
+            
+            .content {{
+                padding: 30px 25px;
+            }}
+            
+            .verify-button {{
+                padding: 16px 30px;
+                font-size: 16px;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class=""email-container"">
+        <div class=""header"">
+            <div class=""logo"">🔐</div>
+            <h1>AuthAPI</h1>
+            <p>Secure Authentication Platform</p>
+        </div>
+        
+        <div class=""content"">
+            <div class=""welcome-text"">
+                Hoş geldiniz! 👋
+            </div>
+            
+            <div class=""description"">
+                AuthAPI platformuna kayıt olduğunuz için teşekkür ederiz! Hesabınızı aktifleştirmek ve güvenli bir şekilde giriş yapabilmek için email adresinizi doğrulamanız gerekmektedir.
+            </div>
+            
+            <div class=""cta-container"">
+                <a href=""{verificationLink}"" class=""verify-button"">
+                    ✨ Email Adresimi Doğrula
+                </a>
+            </div>
+            
+            <div class=""info-box"">
+                <div class=""info-icon"">⏰</div>
+                <div class=""info-text"">
+                    Bu doğrulama linki 72 saat içinde geçerlidir
+                </div>
+            </div>
+            
+            <div class=""alternative-section"">
+                <div class=""alternative-title"">
+                    📋 Buton çalışmıyor mu?
+                </div>
+                <p style=""margin-bottom: 15px; color: #6c757d;"">
+                    Aşağıdaki linki kopyalayıp tarayıcınıza yapıştırabilirsiniz:
+                </p>
+                <div class=""link-box"">
+                    {verificationLink}
+                </div>
+            </div>
+            
+            <div style=""text-align: center; margin-top: 30px; color: #6c757d;"">
+                <p>Bu email'i siz talep etmediyseniz, güvenle görmezden gelebilirsiniz.</p>
+            </div>
+            
+            <div class=""debug-info"">
+                <h4>🔧 Teknik Bilgiler (Geliştirici İçin)</h4>
+                <p><strong>Token ID:</strong> {verificationToken.Substring(0, Math.Min(10, verificationToken.Length))}...</p>
+                <p><strong>Encoded Token:</strong> {encodedToken.Substring(0, Math.Min(15, encodedToken.Length))}...</p>
+                <p><strong>Generated:</strong> {DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC</p>
+            </div>
+        </div>
+        
+        <div class=""footer"">
+            <div class=""footer-logo"">🔐</div>
+            <div class=""footer-text"">
+                © 2024 AuthAPI - Güvenli Kimlik Doğrulama Platformu<br>
+                Bu email otomatik olarak gönderilmiştir.
+            </div>
+            <div class=""social-links"">
+                <a href=""#"">📧</a>
+                <a href=""#"">🌐</a>
+                <a href=""#"">📱</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(email, subject, htmlBody);
+        }
+
+        public async Task SendPasswordResetAsync(string email, string resetToken)
+        {
+            var subject = "Password Reset - AuthAPI";
+            var baseUrl = _configuration["AppSettings:BaseUrl"] ?? "https://localhost:7045";
+            
+            // Token'ı URL encode et - + ve / karakterleri için  
+            var encodedToken = Uri.EscapeDataString(resetToken);
+            
+            // Mobile app için deep link oluştur
+            var mobileDeepLink = $"yourapp://password-reset?token={encodedToken}";
+            
+            // Web için backup link
+            var webResetLink = $"{baseUrl}/api/auth/reset-password?token={encodedToken}";
+            
+            var htmlBody = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Password Reset</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: #dc3545; color: white; padding: 20px; text-align: center; }}
+        .content {{ padding: 20px; background: #f9f9f9; }}
+        .button {{ display: inline-block; padding: 12px 24px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; }}
+        .footer {{ padding: 20px; text-align: center; color: #666; font-size: 12px; }}
+        .token-info {{ margin-top: 20px; padding: 15px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; }}
+        .mobile-section {{ background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>🔐 AuthAPI</h1>
+            <h2>Password Reset Request</h2>
+        </div>
+        <div class='content'>
+            <p>Hello!</p>
+            <p>We received a request to reset your password. Choose the method below that works best for you:</p>
+            
+            <div class='mobile-section'>
+                <h3>📱 Mobile App Users</h3>
+                <p>If you're using our mobile app, click the button below to open the password reset screen directly in the app:</p>
+                <p style='text-align: center;'>
+                    <a href='{mobileDeepLink}' class='button'>🔓 Reset in Mobile App</a>
+                </p>
+                <p><small>Note: This will only work if you have our mobile app installed.</small></p>
+            </div>
+            
+            <div>
+                <h3>🌐 Web Browser</h3>
+                <p>Alternatively, you can reset your password using the web browser:</p>
+                <p style='text-align: center;'>
+                    <a href='{webResetLink}' class='button'>🔓 Reset in Browser</a>
+                </p>
+            </div>
+            
+            <div class='token-info'>
+                <h3>🔑 Manual Reset Token:</h3>
+                <p style='font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 3px; word-break: break-all;'>{resetToken}</p>
+                <p><strong>Instructions for developers:</strong></p>
+                <ol>
+                    <li>Use the POST /api/auth/reset-password endpoint</li>
+                    <li>Send this token along with your new password</li>
+                    <li>Token expires in 1 hour</li>
+                </ol>
+            </div>
+            
+            <p><strong>⏰ This token will expire in 1 hour.</strong></p>
+            <p>If you didn't request a password reset, please ignore this email. Your password will not be changed.</p>
+        </div>
+        <div class='footer'>
+            <p>© 2024 AuthAPI. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(email, subject, htmlBody);
+        }
+
+        private async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                
+                // From
+                var fromEmail = _configuration["EmailSettings:FromEmail"] ?? throw new InvalidOperationException("FromEmail not configured");
+                var fromName = _configuration["EmailSettings:FromName"] ?? "AuthAPI";
+                message.From.Add(new MailboxAddress(fromName, fromEmail));
+                
+                // To
+                message.To.Add(new MailboxAddress("", toEmail));
+                
+                // Subject
+                message.Subject = subject;
+                
+                // Body
+                var bodyBuilder = new BodyBuilder
+                {
+                    HtmlBody = htmlBody
+                };
+                message.Body = bodyBuilder.ToMessageBody();
+
+                // SMTP settings - Environment Variable öncelikli
+                var smtpHost = _configuration["EmailSettings:SmtpHost"] ?? throw new InvalidOperationException("SmtpHost not configured");
+                var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+                var smtpUsername = _configuration["EmailSettings:SmtpUsername"] ?? throw new InvalidOperationException("SmtpUsername not configured");
+                
+                // Environment Variable'dan şifreyi al, yoksa appsettings'den
+                var smtpPassword = Environment.GetEnvironmentVariable("EmailSettings__SmtpPassword") 
+                    ?? _configuration["EmailSettings:SmtpPassword"] 
+                    ?? throw new InvalidOperationException("SmtpPassword not configured");
+
+                using var client = new SmtpClient();
+                
+                // Connect to SMTP server
+                await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+                
+                // Authenticate
+                await client.AuthenticateAsync(smtpUsername, smtpPassword);
+                
+                // Send email
+                await client.SendAsync(message);
+                
+                // Disconnect
+                await client.DisconnectAsync(true);
+                
+                _logger.LogInformation("Email sent successfully to {Email}", toEmail);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
+                throw;
+            }
+        }
+    }
+}

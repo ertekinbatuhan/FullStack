@@ -1,0 +1,15 @@
+﻿{
+  "AppSettings": {
+    "Token": "development-only-secret-key-replace-in-production-with-environment-variable"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=auth.db"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

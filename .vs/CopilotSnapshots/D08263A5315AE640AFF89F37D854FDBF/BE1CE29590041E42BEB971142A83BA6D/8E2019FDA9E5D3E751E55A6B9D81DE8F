@@ -1,0 +1,218 @@
+﻿using AuthAPI.Dtos;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+
+namespace AuthAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
+        {
+            _authService = authService;
+            _logger = logger;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var result = await _authService.Register(userForRegisterDto);
+
+                if (result == null)
+                {
+                    return BadRequest(new { message = "Email already exists." });
+                }
+
+                return StatusCode(201, new { 
+                    message = "User registered successfully. Please check your email to verify your account." 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during registration for email: {Email}", userForRegisterDto.Email);
+                return StatusCode(500, new { message = "An error occurred during registration." });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var token = await _authService.Login(userForLoginDto);
+
+                if (token == null)
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new { token });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during login for email: {Email}", userForLoginDto.Email);
+                return StatusCode(500, new { message = "An error occurred during login." });
+            }
+        }
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Token is required." });
+            }
+
+            try
+            {
+                var result = await _authService.VerifyEmail(token);
+
+                if (!result)
+                {
+                    return BadRequest(new { 
+                        message = "Invalid or expired verification token.",
+                        debug = new {
+                            tokenReceived = token,
+                            timestamp = DateTime.UtcNow,
+                            note = "Check server logs for detailed information"
+                        }
+                    });
+                }
+
+                return Ok(new { message = "Email verified successfully. You can now log in to your account." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during email verification with token: {Token}", token);
+                return StatusCode(500, new { message = "An error occurred during email verification." });
+            }
+        }
+
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerification(ResendVerificationDto resendVerificationDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResendVerificationEmail(resendVerificationDto.Email);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Email not found or already verified." });
+                }
+
+                return Ok(new { message = "Verification email sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending verification email to: {Email}", resendVerificationDto.Email);
+                return StatusCode(500, new { message = "An error occurred while sending verification email." });
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ForgotPassword(forgotPasswordDto.Email);
+
+                // Always return success to prevent email enumeration attacks
+                return Ok(new { message = "If the email exists, a password reset link has been sent." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending password reset email");
+                return StatusCode(500, new { message = "An error occurred while processing your request." });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResetPassword(resetPasswordDto.Token, resetPasswordDto.NewPassword);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Invalid or expired reset token." });
+                }
+
+                return Ok(new { message = "Password reset successfully. You can now log in with your new password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset");
+                return StatusCode(500, new { message = "An error occurred during password reset." });
+            }
+        }
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult GetProtectedData()
+        {
+            var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            return Ok(new { 
+                message = $"Welcome {userEmail}! This is protected data and you are authorized to view it.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+    }
+}

@@ -1,0 +1,129 @@
+﻿# AuthAPI - Stajyer Login Sistemi Projesi
+
+Bu proje, .NET 8 Web API kullanılarak oluşturulmuş temel bir kimlik doğrulama (Authentication) ve yetkilendirme (Authorization) servisidir. Kullanıcıların kaydolmasını, giriş yapmasını ve JWT (JSON Web Token) alarak korumalı kaynaklara erişmesini sağlar.
+
+## Kullanılan Teknolojiler
+
+- **Framework**: .NET 8, ASP.NET Core Web API
+- **Veritabanı**: Entity Framework Core 8, SQLite
+- **Kimlik Doğrulama**: JWT (JSON Web Tokens)
+- **Mimari**: Katmanlı Mimari (Controllers, Services)
+- **Deployment**: Azure Web App
+
+## Gereksinimler
+
+- .NET 8 SDK
+- Visual Studio 2022 veya başka bir kod editörü
+- Azure Account (production deployment için)
+
+## Kurulum Adımları
+
+### Yerel Geliştirme:
+
+1.  **Projeyi Klonla:**
+    ```bash
+    git clone <repository-url>
+    cd AuthAPI
+    ```
+
+2.  **Paketleri Yükle:**
+    ```bash
+    dotnet restore
+    ```
+
+3.  **Veritabanını Oluştur:**
+    ```bash
+    dotnet ef database update
+    ```
+
+4.  **Uygulamayı Çalıştır:**
+    ```bash
+    dotnet run
+    ```
+
+### Azure Web App Deployment:
+
+1.  **Azure'da Environment Variable Ayarla:**
+   - Azure Portal → Web App → Configuration → Application Settings
+   - Yeni ayar ekle: 
+     - **Name**: `JWT_SECRET`
+     - **Value**: Güçlü bir JWT secret key (minimum 256 bit)
+
+2.  **Azure'da Deploy Et:**
+   - Visual Studio'dan Publish
+   - veya GitHub Actions ile CI/CD
+
+## 🔒 Güvenlik Yapılandırması
+
+### Yerel Geliştirme:
+- `appsettings.json`'daki token sadece development içindir
+- Gerçek production secret'ı asla kod içinde saklamayın
+
+### Azure Production:
+- JWT secret `JWT_SECRET` environment variable'ı ile ayarlanır
+- Azure Web App Configuration bölümünden yönetilir
+- Kod içindeki secret otomatik olarak override edilir
+
+## API Endpoint'leri
+
+| Metot | URL | Açıklama | Yetki Gerekli mi? |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Sisteme yeni bir kullanıcı kaydeder. | Hayır |
+| `POST` | `/api/auth/login` | Mevcut bir kullanıcıyı doğrular ve bir JWT döndürür. | Hayır |
+| `GET` | `/api/auth/protected`| Sadece geçerli bir JWT ile erişilebilen korumalı bir veri döndürür. | **Evet** |
+
+### Örnek API Kullanımı:
+
+**Register:**
+```json
+POST /api/auth/register
+{
+  "username": "testuser",
+  "password": "password123"
+}
+```
+
+**Login:**
+```json
+POST /api/auth/login
+{
+  "username": "testuser",
+  "password": "password123"
+}
+```
+
+**Protected Endpoint:**
+```
+GET /api/auth/protected
+Authorization: Bearer <your-jwt-token>
+```
+
+## 🚀 Azure Web App Configuration
+
+### Gerekli Azure Ayarları:
+1. **Environment Variables:**
+   ```
+   JWT_SECRET=<your-super-secure-256-bit-key>
+   ```
+
+2. **CORS Ayarları:**
+   - Frontend URL'lerini Azure CORS ayarlarına ekleyin
+
+3. **HTTPS:**
+   - Azure Web App otomatik HTTPS sağlar
+
+## Güvenlik Notları
+
+- ✅ JWT secret Azure environment variable'ında
+- ✅ HTTPS zorunlu (Azure tarafından sağlanır)
+- ✅ Environment-based configuration
+- ❌ Hassas bilgiler kod içinde yok
+- ❌ Production secret'ları repository'de yok
+
+## Troubleshooting
+
+### JWT Secret Hatası:
+Eğer "JWT secret key is not configured" hatası alıyorsanız:
+1. Azure Portal → Web App → Configuration'a gidin
+2. `JWT_SECRET` environment variable'ını kontrol edin
+3. Değer en az 32 karakter uzunluğunda olmalı

@@ -1,0 +1,33 @@
+﻿@AuthAPI_HostAddress = https://localhost:7188
+# Yukarıdaki port numarası senin projen için farklı olabilir. 
+# Projeyi çalıştırdığında tarayıcıda veya konsolda yazan portu kullanmalısın.
+# Genellikle https://localhost:7XXX gibi bir adrestir. Onu http://localhost:7XXX olarak değiştir.
+
+### Register a new user
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "gokhan",
+  "password": "password123"
+}
+
+### Login with an existing user
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "gokhan",
+  "password": "password123"
+}
+
+### KORUMALI ALAN TESTİ (TOKEN OLMADAN - BAŞARISIZ OLMALI)
+# Bu isteğin "401 Unauthorized" hatası vermesini bekliyoruz.
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+
+### TEST 2: KORUMALI ALAN (DOĞRUDAN TOKEN İLE)
+
+# Token'ı bu sefer doğrudan "Bearer" kelimesinin yanına yapıştırıyoruz.
+# Önceki satırlarda @token tanımı olmayacak.
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJnb2toYW4iLCJuYmYiOjE3NTMyODkyOTIsImV4cCI6MTc1MzM3NTY5MiwiaWF0IjoxNzUzMjg5MjkyfQ.dBtx_tcujM-Lua-gHTcf9BMxkEWI8qTSMoSMscclkRK3zIvI_lynr-dCXjRuhwQ0_6ShDBM5HXrO65UJeQXs7w

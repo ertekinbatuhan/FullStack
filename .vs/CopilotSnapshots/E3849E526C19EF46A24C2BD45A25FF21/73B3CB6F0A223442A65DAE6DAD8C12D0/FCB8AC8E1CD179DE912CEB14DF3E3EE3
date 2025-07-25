@@ -1,0 +1,89 @@
+﻿# AuthAPI - Stajyer Login Sistemi Projesi
+
+Bu proje, .NET 8 Web API kullanılarak oluşturulmuş temel bir kimlik doğrulama (Authentication) ve yetkilendirme (Authorization) servisidir. Kullanıcıların kaydolmasını, giriş yapmasını ve JWT (JSON Web Token) alarak korumalı kaynaklara erişmesini sağlar.
+
+## Kullanılan Teknolojiler
+
+- **Framework**: .NET 8, ASP.NET Core Web API
+- **Veritabanı**: Entity Framework Core 8, SQLite
+- **Kimlik Doğrulama**: JWT (JSON Web Tokens)
+- **Mimari**: Katmanlı Mimari (Controllers, Services)
+
+## Gereksinimler
+
+- .NET 8 SDK
+- Visual Studio 2022 veya başka bir kod editörü
+- Postman (API testi için)
+
+## Kurulum Adımları
+
+1.  **Projeyi Klonla/İndir:**
+    Bu projeyi bilgisayarınıza klonlayın veya zip olarak indirin.
+
+2.  **Paketleri Yükle:**
+    Projenin ana klasöründe bir terminal açın ve aşağıdaki komutu çalıştırın:
+    ```bash
+    dotnet restore
+    ```
+
+3.  **Yapılandırma Dosyasını Hazırla:**
+    `appsettings.template.json` dosyasını `appsettings.json` olarak kopyalayın ve içindeki `YOUR_SUPER_SECRET_JWT_KEY_HERE_MINIMUM_256_BITS_REQUIRED` kısmını güçlü bir secret key ile değiştirin:
+    ```bash
+    cp appsettings.template.json appsettings.json
+    ```
+    
+    **ÖNEMLİ GÜVENLİK NOTU:** JWT secret key'iniz en az 256 bit (32 karakter) uzunluğunda ve güçlü olmalıdır!
+
+4.  **HTTP Test Dosyasını Hazırla (İsteğe Bağlı):**
+    ```bash
+    cp AuthAPI.template.http AuthAPI.http
+    ```
+
+5.  **Veritabanını Oluştur:**
+    Visual Studio'da, **Package Manager Console**'u açın ve aşağıdaki komutu çalıştırarak veritabanını ve tabloları oluşturun:
+    ```powershell
+    Update-Database
+    ```
+    Eğer `dotnet CLI` kullanıyorsanız, terminalde aşağıdaki komutu çalıştırın:
+    ```bash
+    dotnet ef database update
+    ```
+
+## 🔒 Güvenlik Uyarıları
+
+- **appsettings.json** dosyası GitHub'a asla commit edilmemelidir (`.gitignore` ile engellenmiştir)
+- JWT secret key'inizi güçlü ve benzersiz tutun
+- Production ortamında environment variables kullanın
+- HTTP test dosyalarınızda gerçek token'ları saklamayın
+
+## API'yi Çalıştırma
+
+Projeyi Visual Studio'da **F5** tuşuna basarak veya proje klasöründe `dotnet run` komutunu çalıştırarak başlatabilirsiniz.
+
+## API Endpoint'leri
+
+Aşağıda, kullanılabilecek API endpoint'lerinin bir listesi bulunmaktadır.
+
+| Metot | URL | Açıklama | Yetki Gerekli mi? |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Sisteme yeni bir kullanıcı kaydeder. | Hayır |
+| `POST` | `/api/auth/login` | Mevcut bir kullanıcıyı doğrular ve bir JWT döndürür. | Hayır |
+| `GET` | `/api/auth/protected`| Sadece geçerli bir JWT ile erişilebilen korumalı bir veri döndürür. | **Evet** |
+
+---
+**Örnek `register` Request Body'si:**
+```json
+{
+  "username": "testuser",
+  "password": "password123"
+}
+```
+
+## Production Deployment
+
+Production ortamında:
+1. Environment variables kullanarak JWT secret'ı ayarlayın
+2. HTTPS kullanın
+3. Rate limiting ekleyin
+4. Input validation'ı güçlendirin
+5. Logging ve monitoring ekleyin

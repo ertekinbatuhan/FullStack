@@ -1,0 +1,12 @@
+﻿using AuthAPI.Dtos;
+using AuthAPI.Entities;
+
+namespace AuthAPI.Services
+{
+    public interface IAuthService
+    {
+        // Dönüş tiplerini, AuthService sınıfındaki metodlarla eşleşecek şekilde düzeltiyoruz.
+        Task<User?> Register(UserForRegisterDto userForRegisterDto);
+        Task<string?> Login(UserForLoginDto userForLoginDto);
+    }
+}

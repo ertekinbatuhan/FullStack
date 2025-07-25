@@ -1,0 +1,721 @@
+﻿using AuthAPI.Dtos;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+
+namespace AuthAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
+        {
+            _authService = authService;
+            _logger = logger;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var result = await _authService.Register(userForRegisterDto);
+
+                if (result == null)
+                {
+                    return BadRequest(new { message = "Email already exists." });
+                }
+
+                return StatusCode(201, new { 
+                    message = "User registered successfully. Please check your email to verify your account." 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during registration for email: {Email}", userForRegisterDto.Email);
+                return StatusCode(500, new { message = "An error occurred during registration." });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var token = await _authService.Login(userForLoginDto);
+
+                if (token == null)
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new { token });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during login for email: {Email}", userForLoginDto.Email);
+                return StatusCode(500, new { message = "An error occurred during login." });
+            }
+        }
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Token is required." });
+            }
+
+            try
+            {
+                // URL decode ve + karakteri düzeltmesi
+                var decodedToken = Uri.UnescapeDataString(token);
+                
+                // URL'den gelen + karakteri space'e dönüşen problemi çözelim
+                var fixedToken = decodedToken.Replace(" ", "+");
+                
+                _logger.LogInformation("Original token: {OriginalToken}", token);
+                _logger.LogInformation("Decoded token: {DecodedToken}", decodedToken);
+                _logger.LogInformation("Fixed token: {FixedToken}", fixedToken);
+                
+                var result = await _authService.VerifyEmail(fixedToken);
+
+                if (!result)
+                {
+                    return BadRequest(new { 
+                        message = "Invalid or expired verification token.",
+                        debug = new {
+                            originalTokenReceived = token,
+                            decodedToken = decodedToken,
+                            fixedToken = fixedToken,
+                            timestamp = DateTime.UtcNow,
+                            note = "Check server logs for detailed information"
+                        }
+                    });
+                }
+
+                return Ok(new { message = "Email verified successfully. You can now log in to your account." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during email verification with token: {Token}", token);
+                return StatusCode(500, new { message = "An error occurred during email verification." });
+            }
+        }
+
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerification(ResendVerificationDto resendVerificationDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResendVerificationEmail(resendVerificationDto.Email);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Email not found or already verified." });
+                }
+
+                return Ok(new { message = "Verification email sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending verification email to: {Email}", resendVerificationDto.Email);
+                return StatusCode(500, new { message = "An error occurred while sending verification email." });
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ForgotPassword(forgotPasswordDto.Email);
+
+                // Always return success to prevent email enumeration attacks
+                return Ok(new { message = "If the email exists, a password reset link has been sent." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending password reset email");
+                return StatusCode(500, new { message = "An error occurred while processing your request." });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResetPassword(resetPasswordDto.Token, resetPasswordDto.NewPassword);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Invalid or expired reset token." });
+                }
+
+                return Ok(new { message = "Password reset successfully. You can now log in with your new password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset");
+                return StatusCode(500, new { message = "An error occurred during password reset." });
+            }
+        }
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult GetProtectedData()
+        {
+            var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            return Ok(new { 
+                message = $"Welcome {userEmail}! This is protected data and you are authorized to view it.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+
+        [HttpGet("debug-user")]
+        public async Task<IActionResult> DebugUser([FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { message = "Email parameter is required." });
+            }
+
+            try
+            {
+                // Bu endpoint sadece debug için - production'da kaldırın
+                var user = await _authService.GetUserDebugInfo(email);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in debug endpoint");
+                return StatusCode(500, new { message = "Debug error" });
+            }
+        }
+
+        [HttpPost("check-email-status")]
+        public async Task<IActionResult> CheckEmailStatus(EmailStatusDto emailStatusDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.CheckEmailStatus(emailStatusDto.Email);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking email status for: {Email}", emailStatusDto.Email);
+                return StatusCode(500, new { message = "An error occurred while checking email status." });
+            }
+        }
+
+        [HttpGet("reset-password")]
+        public async Task<IActionResult> ResetPasswordGet([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Token is required." });
+            }
+
+            try
+            {
+                // URL decode ve + karakteri düzeltmesi (verify-email gibi)
+                var decodedToken = Uri.UnescapeDataString(token);
+                var fixedToken = decodedToken.Replace(" ", "+");
+                
+                _logger.LogInformation("Password reset GET request with token: {Token}", fixedToken);
+                
+                // Basit bir form sayfası HTML'i döndür veya redirect yap
+                var htmlForm = $@"
+<!DOCTYPE html>
+<html lang=""tr"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>🔑 Şifre Sıfırlama - AuthAPI</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        
+        .container {{
+            max-width: 450px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }}
+        
+        @keyframes slideUp {{
+            from {{ opacity: 0; transform: translateY(30px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }}
+        
+        .logo {{
+            font-size: 48px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }}
+        
+        .header h1 {{
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        
+        .header p {{
+            font-size: 16px;
+            opacity: 0.9;
+        }}
+        
+        .form-container {{
+            padding: 40px 35px;
+        }}
+        
+        .welcome-text {{
+            text-align: center;
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }}
+        
+        .form-group {{
+            margin-bottom: 25px;
+            position: relative;
+        }}
+        
+        .form-group label {{
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+        
+        .form-group input {{
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }}
+        
+        .form-group input:focus {{
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }}
+        
+        .password-requirements {{
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 8px;
+            line-height: 1.4;
+        }}
+        
+        .submit-button {{
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }}
+        
+        .submit-button:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }}
+        
+        .submit-button:disabled {{
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }}
+        
+        .message {{
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 500;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }}
+        
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(-10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+        
+        .success {{
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            border: none;
+        }}
+        
+        .error {{
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            color: white;
+            border: none;
+        }}
+        
+        .strength-indicator {{
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }}
+        
+        .strength-weak {{
+            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            color: white;
+        }}
+        
+        .strength-medium {{
+            background: linear-gradient(135deg, #fdcb6e 0%, #e84393 100%);
+            color: white;
+        }}
+        
+        .strength-strong {{
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+        }}
+        
+        .security-info {{
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            color: white;
+            text-align: center;
+        }}
+        
+        .security-info h4 {{
+            margin-bottom: 10px;
+            font-size: 14px;
+        }}
+        
+        .security-info p {{
+            font-size: 12px;
+            opacity: 0.9;
+        }}
+        
+        .footer {{
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }}
+        
+        .loading {{
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }}
+        
+        @keyframes spin {{
+            to {{ transform: rotate(360deg); }}
+        }}
+        
+        @media (max-width: 480px) {{
+            .container {{
+                margin: 10px;
+                border-radius: 15px;
+            }}
+            
+            .header {{
+                padding: 30px 20px;
+            }}
+            
+            .form-container {{
+                padding: 30px 25px;
+            }}
+            
+            .submit-button {{
+                padding: 14px;
+                font-size: 16px;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class=""container"">
+        <div class=""header"">
+            <div class=""logo"">🔑</div>
+            <h1>Şifre Sıfırlama</h1>
+            <p>Yeni şifrenizi belirleyin</p>
+        </div>
+        
+        <div class=""form-container"">
+            <div class=""welcome-text"">
+                Güvenli yeni şifre oluşturun 🔒
+            </div>
+            
+            <div id=""message""></div>
+            
+            <form id=""resetForm"">
+                <input type=""hidden"" id=""token"" value=""{fixedToken}"">
+                
+                <div class=""form-group"">
+                    <label for=""newPassword"">🔐 Yeni Şifre</label>
+                    <input type=""password"" id=""newPassword"" placeholder=""Güçlü bir şifre girin"" required>
+                    <div class=""password-requirements"">
+                        En az 8 karakter, büyük harf, küçük harf, rakam ve özel karakter (@$!%*?&) içermeli
+                    </div>
+                    <div id=""strengthIndicator"" class=""strength-indicator"" style=""display: none;""></div>
+                </div>
+                
+                <div class=""form-group"">
+                    <label for=""confirmPassword"">🔄 Şifre Tekrarı</label>
+                    <input type=""password"" id=""confirmPassword"" placeholder=""Şifrenizi tekrar girin"" required>
+                </div>
+                
+                <button type=""submit"" class=""submit-button"" id=""submitBtn"">
+                    ✨ Şifremi Sıfırla
+                </button>
+            </form>
+            
+            <div class=""security-info"">
+                <h4>🛡️ Güvenlik Önerisi</h4>
+                <p>Şifrenizi düzenli olarak değiştirin ve kimseyle paylaşmayın. Bu işlemden sonra tüm cihazlarınızda yeniden giriş yapmanız gerekebilir.</p>
+            </div>
+        </div>
+        
+        <div class=""footer"">
+            © 2024 AuthAPI - Güvenli Kimlik Doğrulama Platformu
+        </div>
+    </div>
+
+    <script>
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const strengthIndicator = document.getElementById('strengthIndicator');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Password strength checker
+        function checkPasswordStrength(password) {{
+            const hasLower = /[a-z]/.test(password);
+            const hasUpper = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[@$!%*?&]/.test(password);
+            const isLongEnough = password.length >= 8;
+            
+            const score = [hasLower, hasUpper, hasNumber, hasSpecial, isLongEnough].filter(Boolean).length;
+            
+            if (score === 5) {{
+                return {{ strength: 'Güçlü 💪', className: 'strength-strong' }};
+            }} else if (score >= 3) {{
+                return {{ strength: 'Orta 👍', className: 'strength-medium' }};
+            }} else {{
+                return {{ strength: 'Zayıf ⚠️', className: 'strength-weak' }};
+            }}
+        }}
+        
+        // Real-time password strength indicator
+        newPasswordInput.addEventListener('input', function() {{
+            const password = this.value;
+            
+            if (password.length > 0) {{
+                const result = checkPasswordStrength(password);
+                strengthIndicator.textContent = result.strength;
+                strengthIndicator.className = `strength-indicator ${{result.className}}`;
+                strengthIndicator.style.display = 'block';
+            }} else {{
+                strengthIndicator.style.display = 'none';
+            }}
+        }});
+        
+        // Form submission
+        document.getElementById('resetForm').addEventListener('submit', async function(e) {{
+            e.preventDefault();
+            
+            const token = document.getElementById('token').value;
+            const newPassword = newPasswordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            const messageDiv = document.getElementById('message');
+            
+            // Validation
+            if (newPassword !== confirmPassword) {{
+                showMessage('Şifreler eşleşmiyor! 😞', 'error');
+                return;
+            }}
+            
+            if (newPassword.length < 8) {{
+                showMessage('Şifre en az 8 karakter olmalı! 📏', 'error');
+                return;
+            }}
+            
+            const strengthResult = checkPasswordStrength(newPassword);
+            if (strengthResult.className === 'strength-weak') {{
+                showMessage('Lütfen daha güçlü bir şifre seçin! 💪', 'error');
+                return;
+            }}
+            
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class=""loading""></span>Şifre Sıfırlanıyor...';
+            
+            try {{
+                const response = await fetch('/api/auth/reset-password', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify({{
+                        token: token,
+                        newPassword: newPassword
+                    }})
+                }});
+                
+                const result = await response.json();
+                
+                if (response.ok) {{
+                    showMessage('🎉 ' + result.message + ' Yönlendiriliyorsunuz...', 'success');
+                    document.getElementById('resetForm').style.display = 'none';
+                    
+                    // Redirect after 3 seconds
+                    setTimeout(() => {{
+                        window.close(); // Try to close the tab
+                        window.location.href = '/'; // Fallback redirect
+                    }}, 3000);
+                }} else {{
+                    showMessage('❌ ' + result.message, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '✨ Şifremi Sıfırla';
+                }}
+            }} catch (error) {{
+                showMessage('⚠️ Bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '✨ Şifremi Sıfırla';
+            }}
+        }});
+        
+        function showMessage(text, type) {{
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class=""message ${{type}}"">${{text}}</div>`;
+            
+            // Auto hide after 5 seconds for errors
+            if (type === 'error') {{
+                setTimeout(() => {{
+                    messageDiv.innerHTML = '';
+                }}, 5000);
+            }}
+        }}
+    </script>
+</body>
+</html>";
+
+                return Content(htmlForm, "text/html");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset GET with token: {Token}", token);
+                return StatusCode(500, new { message = "An error occurred during password reset." });
+            }
+        }
+    }
+}

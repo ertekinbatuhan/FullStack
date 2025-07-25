@@ -1,0 +1,395 @@
+﻿using AuthAPI.Dtos;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+
+namespace AuthAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
+        {
+            _authService = authService;
+            _logger = logger;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var result = await _authService.Register(userForRegisterDto);
+
+                if (result == null)
+                {
+                    return BadRequest(new { message = "Email already exists." });
+                }
+
+                return StatusCode(201, new { 
+                    message = "User registered successfully. Please check your email to verify your account." 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during registration for email: {Email}", userForRegisterDto.Email);
+                return StatusCode(500, new { message = "An error occurred during registration." });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var token = await _authService.Login(userForLoginDto);
+
+                if (token == null)
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new { token });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during login for email: {Email}", userForLoginDto.Email);
+                return StatusCode(500, new { message = "An error occurred during login." });
+            }
+        }
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return Content(GetErrorVerificationPage("Invalid token", "", ""), "text/html");
+            }
+
+            try
+            {
+                // URL decode and fix + character issue
+                var decodedToken = Uri.UnescapeDataString(token);
+                
+                // Fix + character that gets converted to space from URL
+                var fixedToken = decodedToken.Replace(" ", "+");
+                
+                _logger.LogInformation("Original token: {OriginalToken}", token);
+                _logger.LogInformation("Decoded token: {DecodedToken}", decodedToken);
+                _logger.LogInformation("Fixed token: {FixedToken}", fixedToken);
+                
+                var result = await _authService.VerifyEmail(fixedToken);
+
+                // Return modern HTML page
+                var htmlPage = result ? GetSuccessVerificationPage() : GetErrorVerificationPage(token, decodedToken, fixedToken);
+                return Content(htmlPage, "text/html");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during email verification with token: {Token}", token);
+                var errorPage = GetErrorVerificationPage(token, "Error", "System error occurred");
+                return Content(errorPage, "text/html");
+            }
+        }
+
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerification(ResendVerificationDto resendVerificationDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResendVerificationEmail(resendVerificationDto.Email);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Email not found or already verified." });
+                }
+
+                return Ok(new { message = "Verification email sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending verification email to: {Email}", resendVerificationDto.Email);
+                return StatusCode(500, new { message = "An error occurred while sending verification email." });
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ForgotPassword(forgotPasswordDto.Email);
+
+                // Always return success to prevent email enumeration attacks
+                return Ok(new { message = "If the email exists, a password reset link has been sent." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending password reset email");
+                return StatusCode(500, new { message = "An error occurred while processing your request." });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResetPassword(resetPasswordDto.Token, resetPasswordDto.NewPassword);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Invalid or expired reset token." });
+                }
+
+                return Ok(new { message = "Password reset successfully. You can now log in with your new password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset");
+                return StatusCode(500, new { message = "An error occurred during password reset." });
+            }
+        }
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult GetProtectedData()
+        {
+            var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            return Ok(new { 
+                message = $"Welcome {userEmail}! This is protected data and you are authorized to view it.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+
+        [HttpGet("debug-user")]
+        public async Task<IActionResult> DebugUser([FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { message = "Email parameter is required." });
+            }
+
+            try
+            {
+                // This endpoint is for debug purposes only - remove in production
+                var user = await _authService.GetUserDebugInfo(email);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in debug endpoint");
+                return StatusCode(500, new { message = "Debug error" });
+            }
+        }
+
+        [HttpPost("check-email-status")]
+        public async Task<IActionResult> CheckEmailStatus(EmailStatusDto emailStatusDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.CheckEmailStatus(emailStatusDto.Email);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking email status for: {Email}", emailStatusDto.Email);
+                return StatusCode(500, new { message = "An error occurred while checking email status." });
+            }
+        }
+
+        [HttpGet("reset-password")]
+        public IActionResult ResetPasswordPage([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Token is required." });
+            }
+
+            try
+            {
+                // URL decode and fix + character issue
+                var decodedToken = Uri.UnescapeDataString(token);
+                var fixedToken = decodedToken.Replace(" ", "+");
+                
+                _logger.LogInformation("Password reset requested with token: {Token}", fixedToken);
+                
+                var htmlForm = GetPasswordResetPage(fixedToken);
+                return Content(htmlForm, "text/html");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset page generation with token: {Token}", token);
+                return StatusCode(500, new { message = "An error occurred while processing your request." });
+            }
+        }
+
+        [HttpPost("delete-account")]
+        [Authorize]
+        public async Task<IActionResult> DeleteAccount(DeleteAccountDto deleteAccountDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.DeleteUserAccount(deleteAccountDto.Email, deleteAccountDto.Password);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new { 
+                    message = "Account deletion confirmation email sent. Please check your email to confirm the deletion.",
+                    warning = "This action is irreversible. Please confirm by clicking the link in the email."
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during account deletion request for email: {Email}", deleteAccountDto.Email);
+                return StatusCode(500, new { message = "An error occurred during account deletion request." });
+            }
+        }
+
+        [HttpDelete("admin/delete-account/{email}")]
+        [Authorize] // In production, add admin role check
+        public async Task<IActionResult> AdminDeleteAccount(string email)
+        {
+            try
+            {
+                var result = await _authService.DeleteUserAccountByAdmin(email);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "User not found." });
+                }
+
+                return Ok(new { 
+                    message = $"User account {email} has been permanently deleted by admin.",
+                    warning = "This action is irreversible and the user has been notified."
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during admin account deletion for email: {Email}", email);
+                return StatusCode(500, new { message = "An error occurred during account deletion." });
+            }
+        }
+
+        [HttpGet("confirm-account-deletion")]
+        public async Task<IActionResult> ConfirmAccountDeletion([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return Content(GetAccountDeletionErrorPage("Invalid token"), "text/html");
+            }
+
+            try
+            {
+                // URL decode and fix + character issue
+                var decodedToken = Uri.UnescapeDataString(token);
+                var fixedToken = decodedToken.Replace(" ", "+");
+                
+                _logger.LogInformation("Account deletion confirmation requested with token: {Token}", fixedToken);
+                
+                var result = await _authService.ConfirmAccountDeletion(fixedToken);
+
+                var htmlPage = result ? GetAccountDeletionSuccessPage() : GetAccountDeletionErrorPage("Invalid or expired deletion token");
+                return Content(htmlPage, "text/html");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during account deletion confirmation with token: {Token}", token);
+                var errorPage = GetAccountDeletionErrorPage("System error occurred");
+                return Content(errorPage, "text/html");
+            }
+        }
+
+        private string GetSuccessVerificationPage()
+        {
+            return "<html><body><h1>Email Verified Successfully!</h1><p>Your email has been verified.</p></body></html>";
+        }
+
+        private string GetErrorVerificationPage(string originalToken, string decodedToken, string fixedToken)
+        {
+            return "<html><body><h1>Email Verification Failed</h1><p>The verification token is invalid or expired.</p></body></html>";
+        }
+
+        private string GetPasswordResetPage(string token)
+        {
+            return $"<html><body><h1>Password Reset</h1><p>Reset your password using token: {token}</p></body></html>";
+        }
+
+        private string GetAccountDeletionSuccessPage()
+        {
+            return "<html><body><h1>Account Deleted</h1><p>Your account has been successfully deleted.</p></body></html>";
+        }
+
+        private string GetAccountDeletionErrorPage(string errorMessage)
+        {
+            return $"<html><body><h1>Account Deletion Failed</h1><p>{errorMessage}</p></body></html>";
+        }
+    }
+}

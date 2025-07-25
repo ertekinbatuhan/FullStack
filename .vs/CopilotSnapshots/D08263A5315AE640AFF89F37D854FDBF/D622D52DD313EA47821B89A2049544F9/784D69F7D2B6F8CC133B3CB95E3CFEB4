@@ -1,0 +1,23 @@
+﻿{
+  "AppSettings": {
+    "Token": "development-only-secret-key-replace-in-production-with-environment-variable",
+    "BaseUrl": "https://localhost:7045"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=auth.db"
+  },
+  "EmailSettings": {
+    "SmtpHost": "smtp.gmail.com",
+    "SmtpPort": "587",
+    "FromName": "AuthAPI",
+    "FromEmail": "gokhansoyturk.6161@gmail.com",
+    "SmtpUsername": "gokhansoyturk.6161@gmail.com"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

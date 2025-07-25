@@ -1,0 +1,15 @@
+﻿{
+  "AppSettings": {
+    "Token": "bu-benim-super-gizli-ve-guvenli-anahtarim-bu-sefer-cok-daha-uzun-oldugundan-emin-olalim"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=auth.db"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

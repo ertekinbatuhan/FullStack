@@ -1,0 +1,15 @@
+﻿{
+  "AppSettings": {
+    "Token": "YOUR_SUPER_SECRET_JWT_KEY_HERE_MINIMUM_256_BITS_REQUIRED"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=auth.db"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

@@ -1,0 +1,479 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\appsettings.example.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\appsettings.example.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}|",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\services\\emailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\services\\emailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\confirmaccountdeletiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\confirmaccountdeletiondto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\deleteaccountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\deleteaccountdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\userforregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\userforregisterdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\services\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\frontend-specs.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\frontend-specs.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\userforlogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\userforlogindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\migrations\\20250123000001_emailauthenticationsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\migrations\\20250123000001_emailauthenticationsystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\authapi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\authapi.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\data\\datacontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\authapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\authapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\authapi.http||{3B902123-F8A7-4915-9F01-361F908088D0}|",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\authapi.http||{3B902123-F8A7-4915-9F01-361F908088D0}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\emaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\emaildto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\services\\iemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\services\\iemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\resendverificationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\resendverificationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\forgotpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\forgotpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\resetpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\resetpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|c:\\users\\gokha\\source\\repos\\authapi\\authapi\\dtos\\emailstatusdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{353DC44A-06F2-49BA-BFFD-5D3B29F956BE}|AuthAPI\\AuthAPI.csproj|solutionrelative:authapi\\dtos\\emailstatusdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.Example.json",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\appsettings.Example.json",
+              "RelativeDocumentMoniker": "AuthAPI\\appsettings.Example.json",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\appsettings.Example.json",
+              "RelativeToolTip": "AuthAPI\\appsettings.Example.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-07-25T08:48:17.037Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "EmailService.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\EmailService.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Services\\EmailService.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\EmailService.cs",
+              "RelativeToolTip": "AuthAPI\\Services\\EmailService.cs",
+              "ViewState": "AgIAAGoEAAAAAAAAAAAswHgEAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T18:08:39.541Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": ".gitignore",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\.gitignore",
+              "RelativeDocumentMoniker": "AuthAPI\\.gitignore",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\.gitignore",
+              "RelativeToolTip": "AuthAPI\\.gitignore",
+              "ViewState": "AgIAADkAAAAAAAAAAIAwwCkAAAAhAAAAAAAAAA==",
+              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAG/SURBVDhPrZRNTgIxFMerDIaEhHgU97JxwUKGGaNeQJdyCY0XUBDWGhg4AB\u002BuvQk7OQCRFTP1fXWmMxUMCT94ee177eu/LVQdFK31kTSJ0WgEIa0SMJ2A6QTHcF9iicQqlYpa/6zv2\u002B2HD5nuEkWR/l4udRzHZBtjGzFor1YrPR6P9WKx0MNhpN96vTuZThyLJ1AJLK/iJFFxjBanBsXIozqkWq2qev1c1Wq19063e0ZBwBNP4JaQ6WRC/i8ajQb5wWBAvnxyghpOqQPkC8L5IEEQKjgxaqOTFsCd65tb6nmlkur1\u002BxwXCgX58KfT7QptwvCK52wrSLcJvtUKOABkQ6HFXwbGsmMRBkchzpjNphLZDSrEn5G1qnsp\u002BPEtheloXouRnXDTTjhb5tXmeyg0IgzuliHp\u002By0OANbiOCDXp1IYo3mMUxBT8/mMA/8QhGH6ZzC4Zwi5ZqoQB9M3h62I/\u002B/SAQpniBmtPvdQyGeYUdgyX8pl05eIBSxmTzQYEYbc42AuJQWLGJNQEcrJG4A4BTHneSW2sqfKOyybkxXMPbAvrx3IsyLzkPJFmUcWYtDntjG6lIvnp8cvKXNIlPoFvstpJRlQPIAAAAAASUVORK5CYII=",
+              "WhenOpened": "2025-07-24T16:52:18.968Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "AuthAPI\\appsettings.json",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\appsettings.json",
+              "RelativeToolTip": "AuthAPI\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-07-23T15:46:42.592Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\README.md",
+              "RelativeDocumentMoniker": "AuthAPI\\README.md",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\README.md",
+              "RelativeToolTip": "AuthAPI\\README.md",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAYwGMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-07-23T17:47:12.981Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Program.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Program.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Program.cs",
+              "RelativeToolTip": "AuthAPI\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGIAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T15:47:18.837Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "AuthAPI\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAGQAAAAAAAAAAAA5wG0AAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T21:36:44.611Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Services\\AuthService.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\AuthService.cs",
+              "RelativeToolTip": "AuthAPI\\Services\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAOYBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T17:12:28.284Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ConfirmAccountDeletionDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ConfirmAccountDeletionDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\ConfirmAccountDeletionDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ConfirmAccountDeletionDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\ConfirmAccountDeletionDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-25T06:55:38.856Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DeleteAccountDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\DeleteAccountDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\DeleteAccountDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\DeleteAccountDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\DeleteAccountDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-25T06:55:32.026Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "UserForRegisterDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\UserForRegisterDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\UserForRegisterDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\UserForRegisterDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\UserForRegisterDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAmwA8AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T15:51:33.271Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IAuthService.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\IAuthService.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Services\\IAuthService.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\IAuthService.cs",
+              "RelativeToolTip": "AuthAPI\\Services\\IAuthService.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAAwAwAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T17:12:05.551Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "FRONTEND-SPECS.md",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\FRONTEND-SPECS.md",
+              "RelativeDocumentMoniker": "AuthAPI\\FRONTEND-SPECS.md",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\FRONTEND-SPECS.md",
+              "RelativeToolTip": "AuthAPI\\FRONTEND-SPECS.md",
+              "ViewState": "AgIAANEEAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2025-07-24T20:23:16.557Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "EmailStatusDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\EmailStatusDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\EmailStatusDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\EmailStatusDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\EmailStatusDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T20:27:00.889Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "UserForLoginDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\UserForLoginDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\UserForLoginDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\UserForLoginDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\UserForLoginDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T16:08:12.539Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ResendVerificationDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ResendVerificationDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\ResendVerificationDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ResendVerificationDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\ResendVerificationDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T19:08:13.086Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "ForgotPasswordDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ForgotPasswordDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\ForgotPasswordDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ForgotPasswordDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\ForgotPasswordDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T19:08:13.32Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "ResetPasswordDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ResetPasswordDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\ResetPasswordDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\ResetPasswordDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\ResetPasswordDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T19:08:13.607Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "20250123000001_EmailAuthenticationSystem.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Migrations\\20250123000001_EmailAuthenticationSystem.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Migrations\\20250123000001_EmailAuthenticationSystem.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Migrations\\20250123000001_EmailAuthenticationSystem.cs",
+              "RelativeToolTip": "AuthAPI\\Migrations\\20250123000001_EmailAuthenticationSystem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T18:25:59.528Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "AuthAPI.http",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\AuthAPI.http",
+              "RelativeDocumentMoniker": "AuthAPI\\AuthAPI.http",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\AuthAPI.http",
+              "RelativeToolTip": "AuthAPI\\AuthAPI.http",
+              "ViewState": "AgIAALQAAAAAAAAAAEBVwGMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-07-23T15:55:01.601Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "EmailDto.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\EmailDto.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Dtos\\EmailDto.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dtos\\EmailDto.cs",
+              "RelativeToolTip": "AuthAPI\\Dtos\\EmailDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T18:08:04.102Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "IEmailService.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\IEmailService.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Services\\IEmailService.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Services\\IEmailService.cs",
+              "RelativeToolTip": "AuthAPI\\Services\\IEmailService.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAIBYwAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-24T18:08:11.198Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "DataContext.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Data\\DataContext.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Data\\DataContext.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Data\\DataContext.cs",
+              "RelativeToolTip": "AuthAPI\\Data\\DataContext.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAABRwAYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T15:46:26.566Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "AuthAPI\\Entities\\User.cs",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Entities\\User.cs",
+              "RelativeToolTip": "AuthAPI\\Entities\\User.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAMBUwBoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-23T15:46:00.779Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "AuthAPI.http",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\AuthAPI.http",
+              "RelativeDocumentMoniker": "AuthAPI\\AuthAPI.http",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\AuthAPI.http",
+              "RelativeToolTip": "AuthAPI\\AuthAPI.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-07-24T16:55:44.549Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Dockerfile",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dockerfile",
+              "RelativeDocumentMoniker": "AuthAPI\\Dockerfile",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\Dockerfile",
+              "RelativeToolTip": "AuthAPI\\Dockerfile",
+              "ViewState": "AgIAABcAAAAAAAAAAABBwBgAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-07-23T19:42:50.898Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "AuthAPI.csproj",
+              "DocumentMoniker": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\AuthAPI.csproj",
+              "RelativeDocumentMoniker": "AuthAPI\\AuthAPI.csproj",
+              "ToolTip": "C:\\Users\\gokha\\source\\repos\\AuthAPI\\AuthAPI\\AuthAPI.csproj",
+              "RelativeToolTip": "AuthAPI\\AuthAPI.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-07-23T15:45:14.504Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

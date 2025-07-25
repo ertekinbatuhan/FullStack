@@ -1,0 +1,124 @@
+﻿using AuthAPI.Data;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add timing diagnostics
+var startTime = DateTime.UtcNow;
+var logger = LoggerFactory.Create(config => config.AddConsole()).CreateLogger("Startup");
+logger.LogInformation("🚀 Application startup began at {StartTime}", startTime);
+
+// Add controller services
+builder.Services.AddControllers();
+
+// Register services
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+logger.LogInformation("✅ Services registered at {ElapsedMs}ms", (DateTime.UtcNow - startTime).TotalMilliseconds);
+
+// Configure CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.WithOrigins("http://localhost:5000", "https://localhost:7045")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+        else
+        {
+            // Production için Azure domain'inizi ekleyin
+            policy.WithOrigins("https://your-azure-app-name.azurewebsites.net")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+    });
+});
+
+logger.LogInformation("✅ CORS configured at {ElapsedMs}ms", (DateTime.UtcNow - startTime).TotalMilliseconds);
+
+// Add database context
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+logger.LogInformation("✅ Database context added at {ElapsedMs}ms", (DateTime.UtcNow - startTime).TotalMilliseconds);
+
+// Get JWT secret from environment variable or configuration
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+    ?? builder.Configuration.GetSection("AppSettings:Token").Value;
+
+if (string.IsNullOrEmpty(jwtSecret))
+{
+    throw new InvalidOperationException("JWT secret key is not configured. Please set JWT_SECRET environment variable or AppSettings:Token in configuration.");
+}
+
+// Configure JWT authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+        };
+    });
+
+logger.LogInformation("✅ JWT authentication configured at {ElapsedMs}ms", (DateTime.UtcNow - startTime).TotalMilliseconds);
+
+var app = builder.Build();
+
+logger.LogInformation("✅ App built at {ElapsedMs}ms", (DateTime.UtcNow - startTime).TotalMilliseconds);
+
+app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+logger.LogInformation("✅ Middleware configured at {ElapsedMs}ms", (DateTime.UtcNow - startTime).TotalMilliseconds);
+
+// Apply database migrations on application startup
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+        var migrationStart = DateTime.UtcNow;
+        logger.LogInformation("🔄 Database migration starting...");
+        
+        db.Database.Migrate();
+        
+        var migrationTime = (DateTime.UtcNow - migrationStart).TotalMilliseconds;
+        logger.LogInformation("✅ Database migration completed in {MigrationMs}ms", migrationTime);
+    }
+}
+catch (Exception ex)
+{
+    var appLogger = app.Services.GetRequiredService<ILogger<Program>>();
+    appLogger.LogError(ex, "❌ An error occurred during migration");
+}
+
+var totalStartupTime = (DateTime.UtcNow - startTime).TotalMilliseconds;
+logger.LogInformation("🎉 Application startup completed in {TotalMs}ms", totalStartupTime);
+
+// Add a health check endpoint
+app.MapGet("/health", () => new
+{
+    status = "healthy",
+    timestamp = DateTime.UtcNow,
+    startupTime = totalStartupTime,
+    environment = app.Environment.EnvironmentName
+});
+
+app.Run();

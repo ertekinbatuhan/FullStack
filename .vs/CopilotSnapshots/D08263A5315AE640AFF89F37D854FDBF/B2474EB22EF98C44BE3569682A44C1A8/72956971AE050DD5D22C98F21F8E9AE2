@@ -1,0 +1,440 @@
+﻿<div align="center">
+
+# 🔐 AuthAPI
+
+**Modern Email-Based JWT Authentication & Authorization API**
+
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
+[![Entity Framework](https://img.shields.io/badge/Entity%20Framework-8.0-512BD4?style=flat-square)](https://docs.microsoft.com/en-us/ef/)
+[![SQLite](https://img.shields.io/badge/SQLite-3.0-003B57?style=flat-square&logo=sqlite)](https://www.sqlite.org/)
+[![Azure](https://img.shields.io/badge/Azure-Web%20App-0078D4?style=flat-square&logo=microsoft-azure)](https://azure.microsoft.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
+[![MailKit](https://img.shields.io/badge/MailKit-SMTP-green?style=flat-square)](https://github.com/jstedfast/MailKit)
+
+*Güvenli, ölçeklenebilir ve modern email tabanlı kimlik doğrulama servisi*
+
+[Demo](#-demo) • [Kurulum](#-kurulum) • [API Dokümantasyonu](#-api-endpoints) • [Deployment](#-deployment)
+
+</div>
+
+---
+
+## 📋 Genel Bakış
+
+AuthAPI, .NET 8 ve Entity Framework Core kullanılarak geliştirilmiş, enterprise-ready bir email tabanlı kimlik doğrulama ve yetkilendirme servisidir. JWT (JSON Web Token) tabanlı güvenlik altyapısı ile modern web uygulamaları için tam güvenlik çözümü sunar.
+
+### ✨ Özellikler
+
+| Özellik | Açıklama |
+|---------|----------|
+| 📧 **Email Authentication** | Email tabanlı kullanıcı kaydı ve girişi |
+| ✅ **Email Verification** | Zorunlu email doğrulama sistemi |
+| 🔑 **Password Reset** | Güvenli şifre sıfırlama sistemi |
+| 🔐 **JWT Authentication** | Industry-standard JSON Web Token implementasyonu |
+| 🛡️ **Secure Password Hashing** | HMACSHA512 ile güvenli şifre hashleme |
+| 📨 **HTML Email Templates** | Profesyonel görünümlü email şablonları |
+| 🌐 **CORS Support** | Cross-origin resource sharing desteği |
+| 🗄️ **Entity Framework Core** | Modern ORM ile veritabanı yönetimi |
+| ☁️ **Azure Ready** | Azure Web App için optimize edilmiş |
+| 🐳 **Docker Support** | Container-ready deployment |
+| 📦 **Environment-based Config** | Üretim ve geliştirme ortamları için ayrı yapılandırma |
+
+---
+
+## 🏗️ Mimari
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Controllers   │ ──▶│    Services     │ ──▶│   Data Layer    │
+│                 │    │                 │    │                 │
+│ • AuthController│    │ • IAuthService  │    │ • DataContext   │
+│                 │    │ • AuthService   │    │ • Entities      │
+│                 │    │ • IEmailService │    │                 │
+│                 │    │ • EmailService  │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│      DTOs       │    │   JWT Handler   │    │     SQLite      │
+│                 │    │                 │    │                 │
+│ • UserForLogin  │    │ • Token Create  │    │ • Users Table   │
+│ • UserForRegister│   │ • Token Verify  │    │ • Email Index   │
+│ • EmailDto      │    │ • Email Service │    │ • Migrations    |
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+---
+
+## 🛠️ Teknoloji Stack
+
+<div align="center">
+
+| Backend | Database | Security | Email | DevOps |
+|---------|----------|----------|-------|---------|
+| ![.NET](https://img.shields.io/badge/.NET_8-512BD4?style=for-the-badge&logo=dotnet&logoColor=white) | ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) | ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white) | ![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white) | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) |
+| ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-512BD4?style=for-the-badge&logo=dotnet&logoColor=white) | ![Entity Framework](https://img.shields.io/badge/Entity_Framework-512BD4?style=for-the-badge&logo=dotnet&logoColor=white) | ![HMACSHA512](https://img.shields.io/badge/HMACSHA512-FF6B6B?style=for-the-badge) | ![MailKit](https://img.shields.io/badge/MailKit-green?style=for-the-badge) | ![Azure](https://img.shields.io/badge/Azure-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white) |
+
+</div>
+
+---
+
+## 🚀 Kurulum
+
+### Ön Gereksinimler
+
+- **.NET 8 SDK** - [İndir](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **Visual Studio 2022** veya **VS Code**
+- **Git** - [İndir](https://git-scm.com/)
+- **Gmail hesabı** - Email göndermek için
+
+### 📧 Gmail SMTP Ayarları
+
+1. **Gmail hesabınızda 2-Step Verification'ı aktif edin**
+2. **App Password oluşturun:**
+   - Google Account → Security → 2-Step Verification → App passwords
+   - "Mail" seçin ve cihaz adı verin
+   - Oluşturulan 16 karakterlik şifreyi kaydedin
+
+### 📦 Yerel Kurulum
+
+```bash
+# Repository'yi klonla
+git clone <repository-url>
+cd AuthAPI
+
+# Bağımlılıkları yükle
+dotnet restore
+
+# Environment variables ayarla (Windows)
+set JWT_SECRET=your-super-secret-256-bit-key-here
+set EmailSettings__FromEmail=your-gmail@gmail.com
+set EmailSettings__SmtpUsername=your-gmail@gmail.com
+set EmailSettings__SmtpPassword=your-app-password
+
+# Veritabanını oluştur
+dotnet ef database update
+
+# Uygulamayı çalıştır
+dotnet run
+```
+
+### 🐳 Docker ile Kurulum
+
+```bash
+# Docker image'ı oluştur
+docker build -t authapi .
+
+# Container'ı çalıştır
+docker run -p 8080:8080 \
+  -e JWT_SECRET="your-super-secret-key" \
+  -e EmailSettings__FromEmail="your-gmail@gmail.com" \
+  -e EmailSettings__SmtpUsername="your-gmail@gmail.com" \
+  -e EmailSettings__SmtpPassword="your-app-password" \
+  authapi
+```
+
+---
+
+## 🔌 API Endpoints
+
+### 📊 Endpoint Özeti
+
+| Method | Endpoint | Açıklama | Auth | Status |
+|--------|----------|----------|------|---------|
+| `POST` | `/api/auth/register` | Email ile kullanıcı kaydı | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `GET` | `/api/auth/verify-email` | Email doğrulama | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `POST` | `/api/auth/resend-verification` | Doğrulama emaili tekrar gönder | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `POST` | `/api/auth/login` | Email ile kullanıcı girişi | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `POST` | `/api/auth/forgot-password` | Şifre sıfırlama emaili gönder | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `POST` | `/api/auth/reset-password` | Yeni şifre belirleme | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `GET` | `/api/auth/protected` | Korumalı veri | ✅ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+
+### 📝 Detaylı API Kullanımı
+
+<details>
+<summary><strong>POST /api/auth/register</strong> - User Registration</summary>
+
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+
+**Email Requirements:**
+- Valid email format
+- Unique (not already registered)
+
+**Password Requirements:**
+- 8-50 characters
+- At least one uppercase letter
+- At least one lowercase letter  
+- At least one number
+- At least one special character (@$!%*?&)
+
+**Response (201 Created):**
+```json
+{
+  "message": "User registered successfully. Please check your email to verify your account."
+}
+```
+
+**Error (400 Bad Request - Validation):**
+```json
+{
+  "message": "Validation failed.",
+  "errors": [
+    {
+      "Field": "Email",
+      "Errors": ["Please enter a valid email address."]
+    },
+    {
+      "Field": "Password", 
+      "Errors": ["Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)."]
+    }
+  ]
+}
+```
+
+**Error (400 Bad Request - Duplicate):**
+```json
+{
+  "message": "Email already exists."
+}
+```
+</details>
+
+<details>
+<summary><strong>GET /api/auth/verify-email</strong> - Email Verification</summary>
+
+**Request:**
+```
+GET /api/auth/verify-email?token=verification_token_here
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Email verified successfully. You can now log in to your account."
+}
+```
+
+**Error (400 Bad Request):**
+```json
+{
+  "message": "Invalid or expired verification token."
+}
+```
+</details>
+
+<details>
+<summary><strong>POST /api/auth/login</strong> - User Login</summary>
+
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Error (400 Bad Request - Unverified Email):**
+```json
+{
+  "message": "Please verify your email address before logging in."
+}
+```
+
+**Error (401 Unauthorized):**
+```json
+{
+  "message": "Invalid email or password."
+}
+```
+</details>
+
+---
+
+## ☁️ Deployment
+
+### 🌐 Azure Web App
+
+#### 1️⃣ Environment Variables Ayarla
+
+Azure Portal → Web App → Configuration → Application Settings:
+
+```env
+JWT_SECRET=your-super-secure-256-bit-key-here
+EmailSettings__SmtpHost=smtp.gmail.com
+EmailSettings__SmtpPort=587
+EmailSettings__FromName=AuthAPI
+EmailSettings__FromEmail=your-gmail@gmail.com
+EmailSettings__SmtpUsername=your-gmail@gmail.com
+EmailSettings__SmtpPassword=your-16-char-app-password
+AppSettings__BaseUrl=https://your-app-name.azurewebsites.net
+```
+
+#### 2️⃣ Dockerfile Güncellemesi
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["AuthAPI.csproj", "."]
+RUN dotnet restore "./AuthAPI.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "AuthAPI.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "AuthAPI.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "AuthAPI.dll"]
+```
+
+---
+
+## 🔒 Güvenlik
+
+### 🛡️ Güvenlik Özellikleri
+
+- ✅ **Email Verification** zorunlu giriş öncesi
+- ✅ **JWT Secret** environment variable'da saklanır
+- ✅ **Password Hashing** HMACSHA512 ile
+- ✅ **Token Expiration** verification ve reset token'ları için
+- ✅ **HTTPS** zorunlu (Azure tarafından sağlanır)
+- ✅ **CORS** yapılandırılabilir
+- ✅ **Input Validation** DTO'lar ile
+- ✅ **Email Enumeration Protection** forgot password'da
+- ✅ **Environment-based** configuration
+
+### ⚠️ Güvenlik Notları
+
+| Konu | Açıklama | Status |
+|------|----------|---------|
+| Email Verification | Email doğrulama zorunlu | ✅ Implemented |
+| JWT Secret | Environment variable olarak saklanmalı | ✅ Implemented |
+| Email Validation | Valid email format kontrolü | ✅ Implemented |
+| Password Policy | 8-50 chars, uppercase, lowercase, number, special char | ✅ Implemented |
+| Token Expiration | 24 saat verification, 1 saat reset | ✅ Implemented |
+| Input Validation | Data annotations ile DTO validation | ✅ Implemented |
+| Rate Limiting | Brute force saldırılarına karşı | 📋 Planned |
+
+---
+
+## 📧 Email Örnekleri
+
+### ✅ Email Verification
+![Email Verification](https://via.placeholder.com/600x400/007bff/ffffff?text=Email+Verification+Template)
+
+### 🔑 Password Reset
+![Password Reset](https://via.placeholder.com/600x400/dc3545/ffffff?text=Password+Reset+Template)
+
+---
+
+## 📊 Demo
+
+### 🌐 Live Demo
+- **URL:** `https://your-app-name.azurewebsites.net`
+- **Test Flow:** Register → Verify Email → Login
+
+### 🧪 Test Senaryoları
+
+```bash
+# 1. Kullanıcı kaydı
+curl -X POST https://your-app-name.azurewebsites.net/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "SecurePass123!"}'
+
+# 2. Email doğrulama (emailden alınan token ile)
+curl -X GET "https://your-app-name.azurewebsites.net/api/auth/verify-email?token=TOKEN_HERE"
+
+# 3. Kullanıcı girişi
+curl -X POST https://your-app-name.azurewebsites.net/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com", "password": "SecurePass123!"}'
+
+# 4. Korumalı endpoint erişimi
+curl -X GET https://your-app-name.azurewebsites.net/api/auth/protected \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+```
+
+---
+
+## 🤝 Katkıda Bulunma
+
+1. Bu repository'yi fork edin
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Değişikliklerinizi commit edin (`git commit -m 'Add amazing feature'`)
+4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
+
+---
+
+## 🆘 Sorun Giderme
+
+<details>
+<summary><strong>Email Gönderim Hatası</strong></summary>
+
+**Hata:** `Failed to send email`
+
+**Çözüm:**
+1. Gmail App Password'unuzun doğru olduğunu kontrol edin
+2. 2-Step Verification'ın aktif olduğunu kontrol edin
+3. Environment variables'ların doğru ayarlandığını kontrol edin
+
+</details>
+
+<details>
+<summary><strong>Email Verification Token Geçersiz</strong></summary>
+
+**Hata:** `Invalid or expired verification token`
+
+**Çözüm:**
+1. Token'ın 24 saat içinde kullanılması gerekir
+2. Yeni verification email talep edin
+3. URL'deki token'ı tam olarak kopyaladığınızdan emin olun
+
+</details>
+
+<details>
+<summary><strong>Login Engellendi</strong></summary>
+
+**Hata:** `Please verify your email address before logging in`
+
+**Çözüm:**
+1. Email'inizi kontrol edin ve verification link'ine tıklayın
+2. Spam klasörünüzü kontrol edin
+3. Verification email'ini yeniden talep edin
+
+</details>
+
+---
+
+## 📄 Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakınız.
+
+---
+
+<div align="center">
+
+**⭐ Bu proje faydalıysa yıldız vermeyi unutmayın!**
+
+Made with ❤️ and ☕ by [Your Name](https://github.com/yourusername)
+
+</div>

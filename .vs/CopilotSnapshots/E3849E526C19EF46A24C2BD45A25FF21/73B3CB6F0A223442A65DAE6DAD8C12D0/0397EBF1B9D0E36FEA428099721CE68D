@@ -1,0 +1,31 @@
+﻿@AuthAPI_HostAddress = https://localhost:7188
+# Yukarıdaki port numarası senin projen için farklı olabilir. 
+# Projeyi çalıştırdığında tarayıcıda veya konsolda yazan portu kullanmalısın.
+# Genellikle https://localhost:7XXX gibi bir adrestir.
+
+### Register a new user
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword123"
+}
+
+### Login with an existing user
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword123"
+}
+
+### KORUMALI ALAN TESTİ (TOKEN OLMADAN - BAŞARISIZ OLMALI)
+# Bu isteğin "401 Unauthorized" hatası vermesini bekliyoruz.
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+
+### KORUMALI ALAN TESTİ (TOKEN İLE)
+# Login'den aldığınız token'ı aşağıya yapıştırın
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+Authorization: Bearer YOUR_JWT_TOKEN_HERE

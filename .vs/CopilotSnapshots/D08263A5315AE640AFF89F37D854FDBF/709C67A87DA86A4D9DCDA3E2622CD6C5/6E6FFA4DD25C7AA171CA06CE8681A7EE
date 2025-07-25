@@ -1,0 +1,383 @@
+﻿using AuthAPI.Dtos;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+
+namespace AuthAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
+        {
+            _authService = authService;
+            _logger = logger;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var result = await _authService.Register(userForRegisterDto);
+
+                if (result == null)
+                {
+                    return BadRequest(new { message = "Email already exists." });
+                }
+
+                return StatusCode(201, new { 
+                    message = "User registered successfully. Please check your email to verify your account." 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during registration for email: {Email}", userForRegisterDto.Email);
+                return StatusCode(500, new { message = "An error occurred during registration." });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            try
+            {
+                var token = await _authService.Login(userForLoginDto);
+
+                if (token == null)
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                return Ok(new { token });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during login for email: {Email}", userForLoginDto.Email);
+                return StatusCode(500, new { message = "An error occurred during login." });
+            }
+        }
+
+        [HttpGet("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Token is required." });
+            }
+
+            try
+            {
+                // URL decode ve + karakteri düzeltmesi
+                var decodedToken = Uri.UnescapeDataString(token);
+                
+                // URL'den gelen + karakteri space'e dönüşen problemi çözelim
+                var fixedToken = decodedToken.Replace(" ", "+");
+                
+                _logger.LogInformation("Original token: {OriginalToken}", token);
+                _logger.LogInformation("Decoded token: {DecodedToken}", decodedToken);
+                _logger.LogInformation("Fixed token: {FixedToken}", fixedToken);
+                
+                var result = await _authService.VerifyEmail(fixedToken);
+
+                if (!result)
+                {
+                    return BadRequest(new { 
+                        message = "Invalid or expired verification token.",
+                        debug = new {
+                            originalTokenReceived = token,
+                            decodedToken = decodedToken,
+                            fixedToken = fixedToken,
+                            timestamp = DateTime.UtcNow,
+                            note = "Check server logs for detailed information"
+                        }
+                    });
+                }
+
+                return Ok(new { message = "Email verified successfully. You can now log in to your account." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during email verification with token: {Token}", token);
+                return StatusCode(500, new { message = "An error occurred during email verification." });
+            }
+        }
+
+        [HttpPost("resend-verification")]
+        public async Task<IActionResult> ResendVerification(ResendVerificationDto resendVerificationDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResendVerificationEmail(resendVerificationDto.Email);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Email not found or already verified." });
+                }
+
+                return Ok(new { message = "Verification email sent successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending verification email to: {Email}", resendVerificationDto.Email);
+                return StatusCode(500, new { message = "An error occurred while sending verification email." });
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ForgotPassword(forgotPasswordDto.Email);
+
+                // Always return success to prevent email enumeration attacks
+                return Ok(new { message = "If the email exists, a password reset link has been sent." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending password reset email");
+                return StatusCode(500, new { message = "An error occurred while processing your request." });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.ResetPassword(resetPasswordDto.Token, resetPasswordDto.NewPassword);
+
+                if (!result)
+                {
+                    return BadRequest(new { message = "Invalid or expired reset token." });
+                }
+
+                return Ok(new { message = "Password reset successfully. You can now log in with your new password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset");
+                return StatusCode(500, new { message = "An error occurred during password reset." });
+            }
+        }
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult GetProtectedData()
+        {
+            var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+            return Ok(new { 
+                message = $"Welcome {userEmail}! This is protected data and you are authorized to view it.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+
+        [HttpGet("debug-user")]
+        public async Task<IActionResult> DebugUser([FromQuery] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { message = "Email parameter is required." });
+            }
+
+            try
+            {
+                // Bu endpoint sadece debug için - production'da kaldırın
+                var user = await _authService.GetUserDebugInfo(email);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in debug endpoint");
+                return StatusCode(500, new { message = "Debug error" });
+            }
+        }
+
+        [HttpPost("check-email-status")]
+        public async Task<IActionResult> CheckEmailStatus(EmailStatusDto emailStatusDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _authService.CheckEmailStatus(emailStatusDto.Email);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking email status for: {Email}", emailStatusDto.Email);
+                return StatusCode(500, new { message = "An error occurred while checking email status." });
+            }
+        }
+
+        [HttpGet("reset-password")]
+        public async Task<IActionResult> ResetPasswordGet([FromQuery] string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                return BadRequest(new { message = "Token is required." });
+            }
+
+            try
+            {
+                // URL decode ve + karakteri düzeltmesi (verify-email gibi)
+                var decodedToken = Uri.UnescapeDataString(token);
+                var fixedToken = decodedToken.Replace(" ", "+");
+                
+                _logger.LogInformation("Password reset GET request with token: {Token}", fixedToken);
+                
+                // Basit bir form sayfası HTML'i döndür veya redirect yap
+                var htmlForm = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Şifre Sıfırlama - AuthAPI</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 50px; background: #f5f5f5; }}
+        .container {{ max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+        .form-group {{ margin-bottom: 20px; }}
+        label {{ display: block; margin-bottom: 5px; font-weight: bold; }}
+        input {{ width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }}
+        button {{ width: 100%; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }}
+        button:hover {{ background: #c82333; }}
+        .hidden {{ display: none; }}
+        .message {{ padding: 10px; margin: 10px 0; border-radius: 5px; }}
+        .success {{ background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }}
+        .error {{ background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h2>🔐 Şifre Sıfırlama</h2>
+        <div id='message'></div>
+        <form id='resetForm'>
+            <input type='hidden' id='token' value='{fixedToken}'>
+            <div class='form-group'>
+                <label for='newPassword'>Yeni Şifre:</label>
+                <input type='password' id='newPassword' placeholder='Yeni şifrenizi girin' required>
+                <small>En az 8 karakter, büyük harf, küçük harf, rakam ve özel karakter (@$!%*?&) içermeli</small>
+            </div>
+            <div class='form-group'>
+                <label for='confirmPassword'>Şifre Tekrar:</label>
+                <input type='password' id='confirmPassword' placeholder='Şifreyi tekrar girin' required>
+            </div>
+            <button type='submit'>Şifreyi Sıfırla</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('resetForm').addEventListener('submit', async function(e) {{
+            e.preventDefault();
+            
+            const token = document.getElementById('token').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageDiv = document.getElementById('message');
+            
+            if (newPassword !== confirmPassword) {{
+                messageDiv.innerHTML = '<div class=""error"">Şifreler eşleşmiyor!</div>';
+                return;
+            }}
+            
+            if (newPassword.length < 8) {{
+                messageDiv.innerHTML = '<div class=""error"">Şifre en az 8 karakter olmalı!</div>';
+                return;
+            }}
+            
+            try {{
+                const response = await fetch('/api/auth/reset-password', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json'
+                    }},
+                    body: JSON.stringify({{
+                        token: token,
+                        newPassword: newPassword
+                    }})
+                }});
+                
+                const result = await response.json();
+                
+                if (response.ok) {{
+                    messageDiv.innerHTML = '<div class=""success"">' + result.message + '</div>';
+                    document.getElementById('resetForm').style.display = 'none';
+                }} else {{
+                    messageDiv.innerHTML = '<div class=""error"">' + result.message + '</div>';
+                }}
+            }} catch (error) {{
+                messageDiv.innerHTML = '<div class=""error"">Bir hata oluştu. Lütfen tekrar deneyin.</div>';
+            }}
+        }});
+    </script>
+</body>
+</html>";
+
+                return Content(htmlForm, "text/html");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password reset GET with token: {Token}", token);
+                return StatusCode(500, new { message = "An error occurred during password reset." });
+            }
+        }
+    }
+}

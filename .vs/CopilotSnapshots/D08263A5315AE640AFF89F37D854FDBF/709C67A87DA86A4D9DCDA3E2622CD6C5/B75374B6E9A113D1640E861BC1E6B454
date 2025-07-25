@@ -1,0 +1,913 @@
+﻿# 📱 **AuthAPI - iOS Swift Uygulaması API Entegrasyonu**
+
+> **Backend API:** `https://login-auth-api-azgnaec5ahavgths.westeurope-01.azurewebsites.net`  
+> **Durum:** ✅ Canlı ve çalışır durumda  
+> **Framework:** .NET 8 + JWT Authentication
+
+---
+
+## 📋 **1. REGISTER EKRANI (Kayıt)**
+
+### **📧 Email TextField Özellikleri**
+```swift
+emailTextField.keyboardType = .emailAddress
+emailTextField.autocorrectionType = .no
+emailTextField.autocapitalizationType = .none
+emailTextField.placeholder = "Email adresinizi girin"
+```
+
+| Özellik | Değer | Açıklama |
+|---------|-------|----------|
+| **Keyboard Type** | `.emailAddress` | Email klavyesi |
+| **Zorunlu** | ✅ **EVET** | Required field |
+| **Placeholder** | `"Email adresinizi girin"` | |
+| **Validasyon** | Email formatı | `@` ve domain kontrolü |
+| **Max Karakter** | Sınır yok | Backend limitin yok |
+| **Hata Mesajı** | `"Geçerli bir email adresi girin"` | |
+| **Örnek** | `user@example.com` | |
+
+### **🔒 Password TextField Özellikleri**
+```swift
+passwordTextField.isSecureTextEntry = true
+passwordTextField.placeholder = "Şifrenizi girin"
+passwordTextField.autocorrectionType = .no
+passwordTextField.autocapitalizationType = .none
+```
+
+| Özellik | Değer | Açıklama |
+|---------|-------|----------|
+| **Secure Entry** | `true` | Password maskeleme |
+| **Zorunlu** | ✅ **EVET** | Required field |
+| **Min Karakter** | `8` | Minimum 8 karakter |
+| **Max Karakter** | `50` | Maximum 50 karakter |
+| **Placeholder** | `"Şifrenizi girin"` | |
+
+#### **Şifre Kuralları (Zorunlu):**
+- ✅ **En az 1 büyük harf** (A-Z)
+- ✅ **En az 1 küçük harf** (a-z)  
+- ✅ **En az 1 rakam** (0-9)
+- ✅ **En az 1 özel karakter** (`@$!%*?&`)
+
+| **Geçerli Şifre Örnekleri** | **Geçersiz Örnekler** |
+|----------------------------|----------------------|
+| `SecurePass123!` | `password` (küçük harf only) |
+| `MyPass2024@` | `PASSWORD123` (küçük harf yok) |
+| `Test123$` | `MyPassword` (rakam/özel karakter yok) |
+
+**Hata Mesajı:**
+```swift
+"Şifre en az 8 karakter olmalı ve büyük harf, küçük harf, rakam ve özel karakter içermeli (@$!%*?&)"
+```
+
+---
+
+## 🔑 **2. LOGIN EKRANI (Giriş)**
+
+### **📧 Email TextField**
+- Aynı register ekranı ile aynı
+- Validasyon: Email formatı kontrolü
+
+### **🔒 Password TextField** 
+- Login'de şifre kuralları **esnek**
+- Sadece **boş olmamalı**
+- Min/max karakter kontrolü yok
+
+---
+
+## 🌐 **3. API ENDPOİNTLERİ**
+
+### **🔗 Base URL**
+```swift
+let baseURL = "https://login-auth-api-azgnaec5ahavgths.westeurope-01.azurewebsites.net"
+```
+
+### **📝 Register API**
+```swift
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+
+**✅ Başarılı Response (201):**
+```json
+{
+  "message": "User registered successfully. Please check your email to verify your account."
+}
+```
+
+**❌ Hata Response (400):**
+```json
+{
+  "message": "Validation failed.",
+  "errors": [
+    {
+      "Field": "Email",
+      "Errors": ["Please enter a valid email address."]
+    },
+    {
+      "Field": "Password", 
+      "Errors": ["Password must contain at least one uppercase letter..."]
+    }
+  ]
+}
+```
+
+### **🔐 Login API**
+```swift
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+
+**✅ Başarılı Response (200):**
+```json
+{
+  "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**❌ Hata Responses:**
+```json
+// Email doğrulanmamış
+{
+  "message": "Please verify your email address before logging in."
+}
+
+// Yanlış email/şifre
+{
+  "message": "Invalid email or password."
+}
+```
+
+### **🔍 Email Status Check API**
+```swift
+POST /api/auth/check-email-status
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+```
+
+**✅ Response Örnekleri:**
+
+**1. Email Kayıtlı ve Doğrulanmış:**
+```json
+{
+  "email": "user@example.com",
+  "isRegistered": true,
+  "isEmailVerified": true,
+  "status": "VERIFIED",
+  "message": "Email adresi doğrulanmış ve kullanıma hazır.",
+  "registrationDate": "2025-01-24T19:00:00Z"
+}
+```
+
+**2. Email Kayıtlı Ama Doğrulanmamış:**
+```json
+{
+  "email": "user@example.com",
+  "isRegistered": true,
+  "isEmailVerified": false,
+  "status": "PENDING_VERIFICATION",
+  "message": "Email doğrulama bekleniyor. Email'inizi kontrol edin.",
+  "registrationDate": "2025-01-24T19:00:00Z"
+}
+```
+
+**3. Email Kayıtlı Ama Token Süresi Dolmuş:**
+```json
+{
+  "email": "user@example.com",
+  "isRegistered": true,
+  "isEmailVerified": false,
+  "status": "PENDING_EXPIRED",
+  "message": "Email doğrulama token'ı süresi dolmuş. Yeni doğrulama email'i talep edin.",
+  "registrationDate": "2025-01-24T19:00:00Z"
+}
+```
+
+**4. Email Hiç Kayıtlı Değil:**
+```json
+{
+  "email": "user@example.com",
+  "isRegistered": false,
+  "isEmailVerified": false,
+  "status": "NOT_REGISTERED",
+  "message": "Bu email adresi ile kayıtlı kullanıcı bulunamadı."
+}
+```
+
+---
+
+## 🎯 **4. Swift VALIDATION ÖZELLİKLERİ**
+
+### **📱 Email Validation**
+```swift
+func isValidEmail(_ email: String) -> Bool {
+    let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+    let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
+    return emailPredicate.evaluate(with: email)
+}
+```
+
+### **🔍 Password Strength Checker**
+```swift
+func checkPasswordStrength(_ password: String) -> (strength: String, color: UIColor) {
+    let hasLower = password.range(of: "[a-z]", options: .regularExpression) != nil
+    let hasUpper = password.range(of: "[A-Z]", options: .regularExpression) != nil
+    let hasNumber = password.range(of: "[0-9]", options: .regularExpression) != nil
+    let hasSpecial = password.range(of: "[@$!%*?&]", options: .regularExpression) != nil
+    let isLongEnough = password.count >= 8
+    
+    if hasLower && hasUpper && hasNumber && hasSpecial && isLongEnough {
+        return ("🟢 Güçlü", .systemGreen)
+    } else if hasLower && hasUpper && (hasNumber || hasSpecial) {
+        return ("🟡 Orta", .systemOrange)
+    } else {
+        return ("🔴 Zayıf", .systemRed)
+    }
+}
+```
+
+### **📋 Form Validation**
+```swift
+func validateForm() -> Bool {
+    guard let email = emailTextField.text, !email.isEmpty else {
+        showAlert(message: "Email gerekli")
+        return false
+    }
+    
+    guard isValidEmail(email) else {
+        showAlert(message: "Geçerli bir email adresi girin")
+        return false
+    }
+    
+    guard let password = passwordTextField.text, !password.isEmpty else {
+        showAlert(message: "Şifre gerekli")
+        return false
+    }
+    
+    // Register ekranı için ek şifre kontrolü
+    if isRegisterScreen {
+        let (strength, _) = checkPasswordStrength(password)
+        if strength.contains("Zayıf") {
+            showAlert(message: "Şifre en az 8 karakter olmalı ve büyük harf, küçük harf, rakam ve özel karakter içermeli")
+            return false
+        }
+    }
+    
+    return true
+}
+```
+
+---
+
+## 💡 **5. Swift API INTEGRATION ÖRNEKLERİ**
+
+### **API Service Sınıfı**
+```swift
+import Foundation
+
+class AuthAPIService {
+    static let shared = AuthAPIService()
+    private let baseURL = "https://login-auth-api-azgnaec5ahavgths.westeurope-01.azurewebsites.net"
+    
+    private init() {}
+}
+
+// MARK: - Data Models
+struct RegisterRequest: Codable {
+    let email: String
+    let password: String
+}
+
+struct LoginRequest: Codable {
+    let email: String
+    let password: String
+}
+
+struct EmailStatusRequest: Codable {
+    let email: String
+}
+
+struct AuthResponse: Codable {
+    let message: String?
+    let token: String?
+    let errors: [ValidationError]?
+}
+
+struct ValidationError: Codable {
+    let field: String
+    let errors: [String]
+    
+    private enum CodingKeys: String, CodingKey {
+        case field = "Field"
+        case errors = "Errors"
+    }
+}
+
+struct EmailStatusResponse: Codable {
+    let email: String
+    let isRegistered: Bool
+    let isEmailVerified: Bool
+    let status: String
+    let message: String
+    let registrationDate: String?
+}
+```
+
+### **Register API Call**
+```swift
+extension AuthAPIService {
+    func register(email: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/auth/register") else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        let request = RegisterRequest(email: email, password: password)
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            urlRequest.httpBody = try JSONEncoder().encode(request)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(APIError.noData))
+                }
+                return
+            }
+            
+            do {
+                let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+                
+                DispatchQueue.main.async {
+                    if httpResponse.statusCode == 201 {
+                        completion(.success(authResponse.message ?? "Kayıt başarılı"))
+                    } else {
+                        let errorMessage = authResponse.errors?.first?.errors.first ?? authResponse.message ?? "Kayıt başarısız"
+                        completion(.failure(APIError.serverError(errorMessage)))
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
+}
+```
+
+### **Login API Call**
+```swift
+extension AuthAPIService {
+    func login(email: String, password: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/auth/login") else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        let request = LoginRequest(email: email, password: password)
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            urlRequest.httpBody = try JSONEncoder().encode(request)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(APIError.noData))
+                }
+                return
+            }
+            
+            do {
+                let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+                
+                DispatchQueue.main.async {
+                    if httpResponse.statusCode == 200, let token = authResponse.token {
+                        // JWT Token'ı Keychain'e kaydet
+                        KeychainHelper.save(token: token)
+                        completion(.success("Giriş başarılı"))
+                    } else {
+                        let errorMessage = authResponse.message ?? "Giriş başarısız"
+                        completion(.failure(APIError.serverError(errorMessage)))
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
+}
+```
+
+### **Email Status Check API Call**
+```swift
+extension AuthAPIService {
+    func checkEmailStatus(email: String, completion: @escaping (Result<EmailStatusResponse, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/auth/check-email-status") else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        let request = EmailStatusRequest(email: email)
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            urlRequest.httpBody = try JSONEncoder().encode(request)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(APIError.noData))
+                }
+                return
+            }
+            
+            do {
+                let statusResponse = try JSONDecoder().decode(EmailStatusResponse.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(statusResponse))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
+}
+```
+
+---
+
+## 🛡️ **6. JWT TOKEN YÖNETİMİ**
+
+### **Keychain Helper**
+```swift
+import Security
+import Foundation
+
+class KeychainHelper {
+    private static let tokenKey = "auth_token"
+    
+    static func save(token: String) {
+        let data = token.data(using: .utf8)!
+        
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: tokenKey,
+            kSecValueData as String: data
+        ]
+        
+        SecItemDelete(query as CFDictionary)
+        SecItemAdd(query as CFDictionary, nil)
+    }
+    
+    static func getToken() -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: tokenKey,
+            kSecReturnData as String: true
+        ]
+        
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        
+        if status == errSecSuccess,
+           let data = result as? Data,
+           let token = String(data: data, encoding: .utf8) {
+            return token
+        }
+        
+        return nil
+    }
+    
+    static func deleteToken() {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: tokenKey
+        ]
+        
+        SecItemDelete(query as CFDictionary)
+    }
+}
+```
+
+### **Authorized API Calls**
+```swift
+extension AuthAPIService {
+    func getProtectedData(completion: @escaping (Result<String, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/auth/protected") else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        guard let token = KeychainHelper.getToken() else {
+            completion(.failure(APIError.noToken))
+            return
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        urlRequest.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            // Handle response...
+        }.resume()
+    }
+}
+```
+
+---
+
+## 🚨 **7. ERROR HANDLING**
+
+```swift
+enum APIError: Error, LocalizedError {
+    case invalidURL
+    case noData
+    case noToken
+    case serverError(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Geçersiz URL"
+        case .noData:
+            return "Veri alınamadı"
+        case .noToken:
+            return "Token bulunamadı"
+        case .serverError(let message):
+            return message
+        }
+    }
+}
+```
+
+### **ViewController'da Kullanım**
+```swift
+class LoginViewController: UIViewController {
+    @IBOutlet weak var emailTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var loginButton: UIButton!
+    
+    @IBAction func loginButtonTapped(_ sender: UIButton) {
+        guard validateForm() else { return }
+        
+        let email = emailTextField.text!
+        let password = passwordTextField.text!
+        
+        loginButton.isEnabled = false
+        loginButton.setTitle("Giriş Yapılıyor...", for: .normal)
+        
+        AuthAPIService.shared.login(email: email, password: password) { [weak self] result in
+            guard let self = self else { return }
+            
+            self.loginButton.isEnabled = true
+            self.loginButton.setTitle("Giriş Yap", for: .normal)
+            
+            switch result {
+            case .success(let message):
+                // Ana ekrana yönlendir
+                self.navigateToMainScreen()
+            case .failure(let error):
+                self.showAlert(message: error.localizedDescription)
+            }
+        }
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "Uyarı", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .default))
+        present(alert, animated: true)
+    }
+}
+```
+
+---
+
+## 📞 **8. DESTEK**
+
+Bu spesifikasyonlar [**AuthAPI Backend**](https://login-auth-api-azgnaec5ahavgths.westeurope-01.azurewebsites.net) için hazırlanmıştır.
+
+**Backend Durumu:** ✅ **Aktif ve Test Edilmiş**  
+**iOS Platform:** Swift 5.0+, iOS 13.0+  
+**Support:** Backend tarafı tamamen hazır, sadece iOS uygulamanızı geliştirmeniz yeterli!
+
+---
+
+**🚀 İyi kodlamalar!**
+
+---
+
+## 🔑 **9. DEEP LINK YÖNETİMİ (Password Reset)**
+
+### **📱 iOS App Deep Link Setup**
+
+#### **URL Scheme Ekleme (Info.plist)**
+```xml
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLName</key>
+        <string>com.yourcompany.yourapp</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>yourapp</string>
+        </array>
+    </dict>
+</array>
+```
+
+#### **SceneDelegate'de Deep Link Handling**
+```swift
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    guard let url = URLContexts.first?.url else { return }
+    
+    if url.scheme == "yourapp" {
+        handleDeepLink(url: url)
+    }
+}
+
+private func handleDeepLink(url: URL) {
+    guard url.host == "password-reset" else { return }
+    
+    // URL'den token'ı al
+    let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+    guard let token = components?.queryItems?.first(where: { $0.name == "token" })?.value else {
+        showAlert(message: "Geçersiz şifre sıfırlama linki")
+        return
+    }
+    
+    // Password reset ekranını aç
+    showPasswordResetScreen(with: token)
+}
+
+private func showPasswordResetScreen(with token: String) {
+    DispatchQueue.main.async {
+        // Ana window'u al
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else { return }
+        
+        // Password reset view controller'ı oluştur
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let passwordResetVC = storyboard.instantiateViewController(withIdentifier: "PasswordResetViewController") as? PasswordResetViewController {
+            passwordResetVC.resetToken = token
+            
+            // Navigation controller içinde present et
+            let navController = UINavigationController(rootViewController: passwordResetVC)
+            window.rootViewController?.present(navController, animated: true)
+        }
+    }
+}
+```
+
+#### **Password Reset View Controller**
+```swift
+class PasswordResetViewController: UIViewController {
+    @IBOutlet weak var newPasswordTextField: UITextField!
+    @IBOutlet weak var confirmPasswordTextField: UITextField!
+    @IBOutlet weak var resetButton: UIButton!
+    @IBOutlet weak var strengthLabel: UILabel!
+    
+    var resetToken: String = ""
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        
+        // Password strength indicator
+        newPasswordTextField.addTarget(self, action: #selector(passwordChanged), for: .editingChanged)
+    }
+    
+    private func setupUI() {
+        title = "Şifre Sıfırlama"
+        
+        // Close button
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(closeButtonTapped)
+        )
+        
+        // Text field configurations
+        newPasswordTextField.isSecureTextEntry = true
+        newPasswordTextField.placeholder = "Yeni şifrenizi girin"
+        
+        confirmPasswordTextField.isSecureTextEntry = true
+        confirmPasswordTextField.placeholder = "Şifreyi tekrar girin"
+        
+        resetButton.setTitle("Şifreyi Sıfırla", for: .normal)
+    }
+    
+    @objc private func passwordChanged() {
+        guard let password = newPasswordTextField.text else { return }
+        
+        let (strength, color) = checkPasswordStrength(password)
+        strengthLabel.text = strength
+        strengthLabel.textColor = color
+    }
+    
+    @objc private func closeButtonTapped() {
+        dismiss(animated: true)
+    }
+    
+    @IBAction func resetButtonTapped(_ sender: UIButton) {
+        guard validatePasswords() else { return }
+        
+        let newPassword = newPasswordTextField.text!
+        
+        resetButton.isEnabled = false
+        resetButton.setTitle("Sıfırlanıyor...", for: .normal)
+        
+        AuthAPIService.shared.resetPassword(token: resetToken, newPassword: newPassword) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                self.resetButton.isEnabled = true
+                self.resetButton.setTitle("Şifreyi Sıfırla", for: .normal)
+                
+                switch result {
+                case .success(let message):
+                    self.showSuccessAlert(message: message)
+                case .failure(let error):
+                    self.showAlert(message: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    private func validatePasswords() -> Bool {
+        guard let newPassword = newPasswordTextField.text, !newPassword.isEmpty else {
+            showAlert(message: "Yeni şifre gerekli")
+            return false
+        }
+        
+        guard let confirmPassword = confirmPasswordTextField.text, !confirmPassword.isEmpty else {
+            showAlert(message: "Şifre tekrarı gerekli")
+            return false
+        }
+        
+        guard newPassword == confirmPassword else {
+            showAlert(message: "Şifreler eşleşmiyor")
+            return false
+        }
+        
+        let (strength, _) = checkPasswordStrength(newPassword)
+        guard !strength.contains("Zayıf") else {
+            showAlert(message: "Şifre en az 8 karakter olmalı ve büyük harf, küçük harf, rakam ve özel karakter içermeli")
+            return false
+        }
+        
+        return true
+    }
+    
+    private func showSuccessAlert(message: String) {
+        let alert = UIAlertController(title: "Başarılı", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .default) { _ in
+            self.dismiss(animated: true)
+        })
+        present(alert, animated: true)
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "Uyarı", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .default))
+        present(alert, animated: true)
+    }
+}
+```
+
+### **🔄 Reset Password API Call (Güncellenmiş)**
+```swift
+extension AuthAPIService {
+    func resetPassword(token: String, newPassword: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/api/auth/reset-password") else {
+            completion(.failure(APIError.invalidURL))
+            return
+        }
+        
+        let requestBody = [
+            "token": token,
+            "newPassword": newPassword
+        ]
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            urlRequest.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                  let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(APIError.noData))
+                }
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let message = json["message"] as? String {
+                    
+                    DispatchQueue.main.async {
+                        if httpResponse.statusCode == 200 {
+                            completion(.success(message))
+                        } else {
+                            completion(.failure(APIError.serverError(message)))
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        completion(.failure(APIError.noData))
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
+}
+```
+
+### **📱 Email'den Gelen Link Formatı**
+
+Artık email'de **iki seçenek** olacak:
+
+1. **📱 Mobile App Button:** `yourapp://password-reset?token=ENCODED_TOKEN`
+2. **🌐 Web Browser Button:** `https://your-api.com/api/auth/reset-password?token=ENCODED_TOKEN`

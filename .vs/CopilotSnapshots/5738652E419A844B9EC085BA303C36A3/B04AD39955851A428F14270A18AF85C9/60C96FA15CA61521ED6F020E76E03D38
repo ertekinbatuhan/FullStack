@@ -1,0 +1,185 @@
+﻿@AuthAPI_HostAddress = https://localhost:7188
+# Azure Production URL: https://your-app-name.azurewebsites.net
+
+#########################################
+# 🔑 AUTHENTICATION FLOW
+#########################################
+
+### 1. Register admin user
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPass123!"
+}
+
+### 2. Verify email (replace TOKEN_HERE with actual token from email)
+GET {{AuthAPI_HostAddress}}/api/auth/verify-email?token=TOKEN_HERE
+
+### 3. Login to get JWT token
+# @name login
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPass123!"
+}
+
+### Extract token from login response
+@authToken = {{login.response.body.token}}
+
+### Test protected endpoint with extracted token
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+Authorization: Bearer {{authToken}}
+
+#########################################
+# 🗑️ ACCOUNT DELETION WITH TOKEN
+#########################################
+
+### Register a test user to delete
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "testuser@example.com",
+  "password": "TestPass123!"
+}
+
+### Verify test user email (replace TOKEN_HERE)
+GET {{AuthAPI_HostAddress}}/api/auth/verify-email?token=TOKEN_HERE
+
+### Admin delete user account using extracted token
+DELETE {{AuthAPI_HostAddress}}/api/auth/admin/delete-account/testuser@example.com
+Authorization: Bearer {{authToken}}
+
+### User self-delete account (requires user's own token)
+POST {{AuthAPI_HostAddress}}/api/auth/delete-account
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "email": "admin@example.com",
+  "password": "AdminPass123!",
+  "confirmDeletion": true
+}
+
+### Confirm account deletion (replace TOKEN_HERE with deletion token from email)
+GET {{AuthAPI_HostAddress}}/api/auth/confirm-account-deletion?token=TOKEN_HERE
+
+#########################################
+# 🔧 OTHER ENDPOINTS
+#########################################
+
+### Register a new user with email
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "SecurePass123!"
+}
+
+### Register with INVALID email (should fail)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "SecurePass123!"
+}
+
+### Register with INVALID password (should fail - no special character)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "SecurePass123"
+}
+
+### Register with SHORT password (should fail - less than 8 characters)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test3@example.com",
+  "password": "Sec1!"
+}
+
+### Verify email with token (replace TOKEN_HERE with actual token from email)
+GET {{AuthAPI_HostAddress}}/api/auth/verify-email?token=TOKEN_HERE
+
+### Resend verification email
+POST {{AuthAPI_HostAddress}}/api/auth/resend-verification
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Login with verified user
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",  
+  "password": "SecurePass123!"
+}
+
+### Login with UNVERIFIED user (should fail)
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "unverified@example.com",  
+  "password": "SecurePass123!"
+}
+
+### Forgot password
+POST {{AuthAPI_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Reset password (replace TOKEN_HERE with actual token from email)
+POST {{AuthAPI_HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "TOKEN_HERE",
+  "newPassword": "NewSecurePass123!"
+}
+
+### Test protected endpoint WITHOUT token (should fail with 401)
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+
+### Check email status
+POST {{AuthAPI_HostAddress}}/api/auth/check-email-status
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+#########################################
+# 🔧 DEBUG ENDPOINTS (Remove in production)
+#########################################
+
+### Debug: Get user info
+GET {{AuthAPI_HostAddress}}/api/auth/debug-user?email=test@example.com
+
+### Health check
+GET {{AuthAPI_HostAddress}}/health
+
+### Ping endpoint
+GET {{AuthAPI_HostAddress}}/ping
+
+#########################################
+# 🔒 GÜVENLIK NOTU:
+# Bu dosyada gerçek tokenlar veya şifreler saklamayın!
+# Test için sadece placeholder'ları kullanın.
+#########################################

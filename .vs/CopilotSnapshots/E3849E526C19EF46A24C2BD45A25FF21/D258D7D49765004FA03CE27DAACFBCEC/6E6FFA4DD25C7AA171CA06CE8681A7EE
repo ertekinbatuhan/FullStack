@@ -1,0 +1,55 @@
+﻿using AuthAPI.Dtos;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization; // [Authorize] için using ifadesi
+
+namespace AuthAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        {
+            var result = await _authService.Register(userForRegisterDto);
+
+            if (result == null)
+            {
+                // Artık JSON formatında hata dönüyoruz
+                return BadRequest(new { message = "Username already exists." });
+            }
+
+            return StatusCode(201);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
+        {
+            var token = await _authService.Login(userForLoginDto);
+
+            if (token == null)
+            {
+                // Artık JSON formatında hata dönüyoruz
+                return Unauthorized(new { message = "Invalid username or password." });
+            }
+
+            return Ok(new { token });
+        }
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult GetProtectedData()
+        {
+            var username = User.Identity?.Name;
+            return Ok($"Hoş geldin {username}! Bu korumalı bir veridir ve sen görmeye yetkilisin.");
+        }
+    }
+}

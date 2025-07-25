@@ -1,0 +1,86 @@
+﻿using AuthAPI.Dtos;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
+namespace AuthAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            var result = await _authService.Register(userForRegisterDto);
+
+            if (result == null)
+            {
+                return BadRequest(new { message = "Username already exists." });
+            }
+
+            return StatusCode(201, new { message = "User registered successfully." });
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { 
+                        Field = x.Key, 
+                        Errors = x.Value.Errors.Select(e => e.ErrorMessage) 
+                    });
+                
+                return BadRequest(new { 
+                    message = "Validation failed.", 
+                    errors = errors 
+                });
+            }
+
+            var token = await _authService.Login(userForLoginDto);
+
+            if (token == null)
+            {
+                return Unauthorized(new { message = "Invalid username or password." });
+            }
+
+            return Ok(new { token });
+        }
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult GetProtectedData()
+        {
+            var username = User.Identity?.Name;
+            return Ok(new { 
+                message = $"Welcome {username}! This is protected data and you are authorized to view it.",
+                timestamp = DateTime.UtcNow
+            });
+        }
+    }
+}

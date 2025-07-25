@@ -1,0 +1,171 @@
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+
+namespace AuthAPI.Services
+{
+    public class EmailService : IEmailService
+    {
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<EmailService> _logger;
+
+        public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
+        {
+            _configuration = configuration;
+            _logger = logger;
+        }
+
+        public async Task SendEmailVerificationAsync(string email, string verificationToken)
+        {
+            var subject = "Email Verification - AuthAPI";
+            var baseUrl = _configuration["AppSettings:BaseUrl"] ?? "https://localhost:7045";
+            var verificationLink = $"{baseUrl}/api/auth/verify-email?token={verificationToken}";
+            
+            var htmlBody = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Email Verification</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: #007bff; color: white; padding: 20px; text-align: center; }}
+        .content {{ padding: 20px; background: #f9f9f9; }}
+        .button {{ display: inline-block; padding: 12px 24px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; }}
+        .footer {{ padding: 20px; text-align: center; color: #666; font-size: 12px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>🔐 AuthAPI</h1>
+            <h2>Email Verification Required</h2>
+        </div>
+        <div class='content'>
+            <p>Hello!</p>
+            <p>Thank you for registering with AuthAPI. To complete your registration, please verify your email address by clicking the button below:</p>
+            <p style='text-align: center; margin: 30px 0;'>
+                <a href='{verificationLink}' class='button'>Verify Email Address</a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style='word-break: break-all; background: #eee; padding: 10px; border-radius: 5px;'>{verificationLink}</p>
+            <p><strong>This link will expire in 24 hours.</strong></p>
+            <p>If you didn't create an account with us, please ignore this email.</p>
+        </div>
+        <div class='footer'>
+            <p>© 2024 AuthAPI. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(email, subject, htmlBody);
+        }
+
+        public async Task SendPasswordResetAsync(string email, string resetToken)
+        {
+            var subject = "Password Reset - AuthAPI";
+            var baseUrl = _configuration["AppSettings:BaseUrl"] ?? "https://localhost:7045";
+            var resetLink = $"{baseUrl}/api/auth/reset-password?token={resetToken}";
+            
+            var htmlBody = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Password Reset</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: #dc3545; color: white; padding: 20px; text-align: center; }}
+        .content {{ padding: 20px; background: #f9f9f9; }}
+        .button {{ display: inline-block; padding: 12px 24px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; }}
+        .footer {{ padding: 20px; text-align: center; color: #666; font-size: 12px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>🔐 AuthAPI</h1>
+            <h2>Password Reset Request</h2>
+        </div>
+        <div class='content'>
+            <p>Hello!</p>
+            <p>We received a request to reset your password. If you made this request, click the button below to reset your password:</p>
+            <p style='text-align: center; margin: 30px 0;'>
+                <a href='{resetLink}' class='button'>Reset Password</a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style='word-break: break-all; background: #eee; padding: 10px; border-radius: 5px;'>{resetLink}</p>
+            <p><strong>This link will expire in 1 hour.</strong></p>
+            <p>If you didn't request a password reset, please ignore this email. Your password will not be changed.</p>
+        </div>
+        <div class='footer'>
+            <p>© 2024 AuthAPI. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            await SendEmailAsync(email, subject, htmlBody);
+        }
+
+        private async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
+        {
+            try
+            {
+                var message = new MimeMessage();
+                
+                // From
+                var fromEmail = _configuration["EmailSettings:FromEmail"] ?? throw new InvalidOperationException("FromEmail not configured");
+                var fromName = _configuration["EmailSettings:FromName"] ?? "AuthAPI";
+                message.From.Add(new MailboxAddress(fromName, fromEmail));
+                
+                // To
+                message.To.Add(new MailboxAddress("", toEmail));
+                
+                // Subject
+                message.Subject = subject;
+                
+                // Body
+                var bodyBuilder = new BodyBuilder
+                {
+                    HtmlBody = htmlBody
+                };
+                message.Body = bodyBuilder.ToMessageBody();
+
+                // SMTP settings - Environment Variable öncelikli
+                var smtpHost = _configuration["EmailSettings:SmtpHost"] ?? throw new InvalidOperationException("SmtpHost not configured");
+                var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
+                var smtpUsername = _configuration["EmailSettings:SmtpUsername"] ?? throw new InvalidOperationException("SmtpUsername not configured");
+                
+                // Environment Variable'dan şifreyi al, yoksa appsettings'den
+                var smtpPassword = Environment.GetEnvironmentVariable("EmailSettings__SmtpPassword") 
+                    ?? _configuration["EmailSettings:SmtpPassword"] 
+                    ?? throw new InvalidOperationException("SmtpPassword not configured");
+
+                using var client = new SmtpClient();
+                
+                // Connect to SMTP server
+                await client.ConnectAsync(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+                
+                // Authenticate
+                await client.AuthenticateAsync(smtpUsername, smtpPassword);
+                
+                // Send email
+                await client.SendAsync(message);
+                
+                // Disconnect
+                await client.DisconnectAsync(true);
+                
+                _logger.LogInformation("Email sent successfully to {Email}", toEmail);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
+                throw;
+            }
+        }
+    }
+}

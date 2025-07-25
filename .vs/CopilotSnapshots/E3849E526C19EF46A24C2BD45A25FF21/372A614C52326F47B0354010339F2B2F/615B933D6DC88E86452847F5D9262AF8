@@ -1,0 +1,418 @@
+﻿<div align="center">
+
+# 🔐 AuthAPI
+
+**Modern JWT Authentication & Authorization API**
+
+[![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
+[![Entity Framework](https://img.shields.io/badge/Entity%20Framework-8.0-512BD4?style=flat-square)](https://docs.microsoft.com/en-us/ef/)
+[![SQLite](https://img.shields.io/badge/SQLite-3.0-003B57?style=flat-square&logo=sqlite)](https://www.sqlite.org/)
+[![Azure](https://img.shields.io/badge/Azure-Web%20App-0078D4?style=flat-square&logo=microsoft-azure)](https://azure.microsoft.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
+
+*Güvenli, ölçeklenebilir ve modern kimlik doğrulama servisi*
+
+[Demo](#-demo) • [Kurulum](#-kurulum) • [API Dokümantasyonu](#-api-endpoints) • [Deployment](#-deployment)
+
+</div>
+
+---
+
+## 📋 Genel Bakış
+
+AuthAPI, .NET 8 ve Entity Framework Core kullanılarak geliştirilmiş, enterprise-ready bir kimlik doğrulama ve yetkilendirme servisidir. JWT (JSON Web Token) tabanlı güvenlik altyapısı ile modern web uygulamaları için tam güvenlik çözümü sunar.
+
+### ✨ Özellikler
+
+| Özellik | Açıklama |
+|---------|----------|
+| 🔐 **JWT Authentication** | Industry-standard JSON Web Token implementasyonu |
+| 🛡️ **Secure Password Hashing** | HMACSHA512 ile güvenli şifre hashleme |
+| 🌐 **CORS Support** | Cross-origin resource sharing desteği |
+| 🗄️ **Entity Framework Core** | Modern ORM ile veritabanı yönetimi |
+| ☁️ **Azure Ready** | Azure Web App için optimize edilmiş |
+| 🐳 **Docker Support** | Container-ready deployment |
+| 📦 **Environment-based Config** | Üretim ve geliştirme ortamları için ayrı yapılandırma |
+
+---
+
+## 🏗️ Mimari
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Controllers   │ ──▶│    Services     │ ──▶│   Data Layer    │
+│                 │    │                 │    │                 │
+│ • AuthController│    │ • IAuthService  │    │ • DataContext   │
+│                 │    │ • AuthService   │    │ • Entities      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│      DTOs       │    │   JWT Handler   │    │     SQLite      │
+│                 │    │                 │    │                 │
+│ • UserForLogin  │    │ • Token Create  │    │ • Users Table   │
+│ • UserForRegister│   │ • Token Verify  │    │ • Migrations    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+---
+
+## 🛠️ Teknoloji Stack
+
+<div align="center">
+
+| Backend | Database | Security | DevOps |
+|---------|----------|----------|---------|
+| ![.NET](https://img.shields.io/badge/.NET_8-512BD4?style=for-the-badge&logo=dotnet&logoColor=white) | ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white) | ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white) | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) |
+| ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-512BD4?style=for-the-badge&logo=dotnet&logoColor=white) | ![Entity Framework](https://img.shields.io/badge/Entity_Framework-512BD4?style=for-the-badge&logo=dotnet&logoColor=white) | ![HMACSHA512](https://img.shields.io/badge/HMACSHA512-FF6B6B?style=for-the-badge) | ![Azure](https://img.shields.io/badge/Azure-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white) |
+
+</div>
+
+---
+
+## 🚀 Kurulum
+
+### Ön Gereksinimler
+
+- **.NET 8 SDK** - [İndir](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **Visual Studio 2022** veya **VS Code**
+- **Git** - [İndir](https://git-scm.com/)
+
+### 📦 Yerel Kurulum
+
+```bash
+# Repository'yi klonla
+git clone <repository-url>
+cd AuthAPI
+
+# Bağımlılıkları yükle
+dotnet restore
+
+# Veritabanını oluştur
+dotnet ef database update
+
+# Uygulamayı çalıştır
+dotnet run
+```
+
+### 🐳 Docker ile Kurulum
+
+```bash
+# Docker image'ı oluştur
+docker build -t authapi .
+
+# Container'ı çalıştır
+docker run -p 8080:8080 -e JWT_SECRET="your-super-secret-key" authapi
+```
+
+---
+
+## 🔌 API Endpoints
+
+### 📊 Endpoint Özeti
+
+| Method | Endpoint | Açıklama | Auth | Status |
+|--------|----------|----------|------|---------|
+| `POST` | `/api/auth/register` | Kullanıcı kaydı | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `POST` | `/api/auth/login` | Kullanıcı girişi | ❌ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+| `GET` | `/api/auth/protected` | Korumalı veri | ✅ | ![Aktif](https://img.shields.io/badge/status-active-success) |
+
+### 📝 Detaylı API Kullanımı
+
+<details>
+<summary><strong>POST /api/auth/register</strong> - User Registration</summary>
+
+**Request:**
+```json
+{
+  "username": "john_doe123",
+  "password": "SecurePass123!"
+}
+```
+
+**Username Requirements:**
+- 3-20 characters
+- Only letters, numbers, and underscores allowed
+- No spaces or special characters
+
+**Password Requirements:**
+- 8-50 characters
+- At least one uppercase letter
+- At least one lowercase letter  
+- At least one number
+- At least one special character (@$!%*?&)
+
+**Response (201 Created):**
+```json
+{
+  "message": "User registered successfully."
+}
+```
+
+**Error (400 Bad Request - Validation):**
+```json
+{
+  "message": "Validation failed.",
+  "errors": [
+    {
+      "Field": "Username",
+      "Errors": ["Username can only contain letters, numbers, and underscores."]
+    },
+    {
+      "Field": "Password", 
+      "Errors": ["Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)."]
+    }
+  ]
+}
+```
+
+**Error (400 Bad Request - Duplicate):**
+```json
+{
+  "message": "Username already exists."
+}
+```
+</details>
+
+<details>
+<summary><strong>POST /api/auth/login</strong> - User Login</summary>
+
+**Request:**
+```json
+{
+  "username": "john_doe123",
+  "password": "SecurePass123!"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Error (400 Bad Request - Validation):**
+```json
+{
+  "message": "Validation failed.",
+  "errors": [
+    {
+      "Field": "Username",
+      "Errors": ["Username is required."]
+    }
+  ]
+}
+```
+
+**Error (401 Unauthorized):**
+```json
+{
+  "message": "Invalid username or password."
+}
+```
+</details>
+
+<details>
+<summary><strong>GET /api/auth/protected</strong> - Protected Endpoint</summary>
+
+**Headers:**
+```
+Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9...
+```
+
+**Response (200 OK):**
+```json
+{
+  "message": "Welcome john_doe123! This is protected data and you are authorized to view it.",
+  "timestamp": "2024-01-23T10:30:00.000Z"
+}
+```
+
+**Error (401 Unauthorized):**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+</details>
+
+---
+
+## ☁️ Deployment
+
+### 🌐 Azure Web App
+
+#### 1️⃣ Environment Variables Ayarla
+
+Azure Portal → Web App → Configuration → Application Settings:
+
+```env
+JWT_SECRET=your-super-secure-256-bit-key-here
+```
+
+#### 2️⃣ Deploy Yöntemleri
+
+<details>
+<summary><strong>Visual Studio ile Deploy</strong></summary>
+
+1. Solution Explorer'da projeye sağ tık
+2. **Publish** seçeneğini tıkla
+3. **Azure** → **Azure App Service (Windows/Linux)**
+4. Subscription ve Resource Group seç
+5. **Publish** butonuna tık
+
+</details>
+
+<details>
+<summary><strong>GitHub Actions ile CI/CD</strong></summary>
+
+`.github/workflows/azure-deploy.yml` dosyası oluştur:
+
+```yaml
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Build
+      run: dotnet build --configuration Release
+      
+    - name: Publish
+      run: dotnet publish -c Release -o ./publish
+      
+    - name: Deploy to Azure
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'your-app-name'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: ./publish
+```
+
+</details>
+
+---
+
+## 🔒 Güvenlik
+
+### 🛡️ Güvenlik Özellikleri
+
+- ✅ **JWT Secret** environment variable'da saklanır
+- ✅ **Password Hashing** HMACSHA512 ile
+- ✅ **HTTPS** zorunlu (Azure tarafından sağlanır)
+- ✅ **CORS** yapılandırılabilir
+- ✅ **Input Validation** DTO'lar ile
+- ✅ **Environment-based** configuration
+
+### ⚠️ Güvenlik Notları
+
+| Konu | Açıklama | Status |
+|------|----------|---------|
+| JWT Secret | Environment variable olarak saklanmalı | ✅ Implemented |
+| Password Policy | Minimum uzunluk ve karmaşıklık | ⚠️ Recommended |
+| Rate Limiting | Brute force saldırılarına karşı | 📋 Planned |
+| Input Sanitization | XSS ve injection saldırılarına karşı | 📋 Planned |
+
+---
+
+## 📊 Demo
+
+### 🌐 Live Demo
+- **URL:** `https://your-app-name.azurewebsites.net`
+- **Test User:** `testuser` / `password123`
+
+### 🧪 Test Senaryoları
+
+```bash
+# 1. Kullanıcı kaydı
+curl -X POST https://your-app-name.azurewebsites.net/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "testuser", "password": "password123"}'
+
+# 2. Kullanıcı girişi
+curl -X POST https://your-app-name.azurewebsites.net/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "testuser", "password": "password123"}'
+
+# 3. Korumalı endpoint erişimi
+curl -X GET https://your-app-name.azurewebsites.net/api/auth/protected \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE"
+```
+
+---
+
+## 🤝 Katkıda Bulunma
+
+1. Bu repository'yi fork edin
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Değişikliklerinizi commit edin (`git commit -m 'Add amazing feature'`)
+4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
+5. Pull Request oluşturun
+
+---
+
+## 🆘 Sorun Giderme
+
+<details>
+<summary><strong>JWT Secret Hatası</strong></summary>
+
+**Hata:** `JWT secret key is not configured`
+
+**Çözüm:**
+1. Azure Portal → Web App → Configuration
+2. `JWT_SECRET` environment variable'ını kontrol edin
+3. Değer minimum 32 karakter uzunluğunda olmalı
+
+</details>
+
+<details>
+<summary><strong>Database Migration Hatası</strong></summary>
+
+**Hata:** `Database update failed`
+
+**Çözüm:**
+```bash
+dotnet ef database drop
+dotnet ef database update
+```
+
+</details>
+
+<details>
+<summary><strong>CORS Hatası</strong></summary>
+
+**Hata:** `CORS policy blocked`
+
+**Çözüm:**
+1. `Program.cs` dosyasında CORS policy'yi kontrol edin
+2. Frontend URL'ini `WithOrigins()` metoduna ekleyin
+
+</details>
+
+---
+
+## 📄 Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakınız.
+
+---
+
+<div align="center">
+
+**⭐ Bu proje faydalıysa yıldız vermeyi unutmayın!**
+
+Made with ❤️ by [Your Name](https://github.com/yourusername)
+
+</div>

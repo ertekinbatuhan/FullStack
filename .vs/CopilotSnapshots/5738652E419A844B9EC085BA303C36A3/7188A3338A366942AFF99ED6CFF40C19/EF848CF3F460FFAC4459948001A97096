@@ -1,0 +1,98 @@
+﻿@AuthAPI_HostAddress = https://localhost:7188
+# Azure Production URL: https://your-app-name.azurewebsites.net
+
+### Register a new user with email
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "SecurePass123!"
+}
+
+### Register with INVALID email (should fail)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "SecurePass123!"
+}
+
+### Register with INVALID password (should fail - no special character)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "SecurePass123"
+}
+
+### Register with SHORT password (should fail - less than 8 characters)
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test3@example.com",
+  "password": "Sec1!"
+}
+
+### Verify email with token (replace TOKEN_HERE with actual token from email)
+GET {{AuthAPI_HostAddress}}/api/auth/verify-email?token=TOKEN_HERE
+
+### Resend verification email
+POST {{AuthAPI_HostAddress}}/api/auth/resend-verification
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Login with verified user
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",  
+  "password": "SecurePass123!"
+}
+
+### Login with UNVERIFIED user (should fail)
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "unverified@example.com",  
+  "password": "SecurePass123!"
+}
+
+### Forgot password
+POST {{AuthAPI_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Reset password (replace TOKEN_HERE with actual token from email)
+POST {{AuthAPI_HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "TOKEN_HERE",
+  "newPassword": "NewSecurePass123!"
+}
+
+### Test protected endpoint WITHOUT token (should fail with 401)
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+
+### Test protected endpoint WITH token
+# Replace YOUR_JWT_TOKEN_HERE with actual token from login response
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+#########################################
+# 🔒 GÜVENLIK NOTU:
+# Bu dosyada gerçek tokenlar veya şifreler saklamayın!
+# Test için sadece placeholder'ları kullanın.
+#########################################

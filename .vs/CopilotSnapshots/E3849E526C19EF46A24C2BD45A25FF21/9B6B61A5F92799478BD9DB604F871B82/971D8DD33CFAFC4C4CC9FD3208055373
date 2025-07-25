@@ -1,0 +1,84 @@
+﻿using AuthAPI.Data;
+using AuthAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Controller servisini ekle
+builder.Services.AddControllers();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// CORS ayarlarını yap
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Veritabanı servisini ekle
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+
+// === YENİ BÖLÜM BAŞLANGICI ===
+// Kimlik doğrulama servisini ekliyoruz
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // Token'ı imzalayanın (Issuer) doğrulanmayacağını belirtir
+            ValidateIssuer = false,
+            // Token'ın gönderildiği kitlenin (Audience) doğrulanmayacağını belirtir
+            ValidateAudience = false,
+            // Token'ı imzalayan anahtarın doğrulanacağını belirtir
+            ValidateIssuerSigningKey = true,
+            // Doğrulama için kullanılacak gizli anahtarı ayarla
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                builder.Configuration.GetSection("AppSettings:Token").Value))
+        };
+    });
+// === YENİ BÖLÜM SONU ===
+
+
+var app = builder.Build();
+
+app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
+
+// === YENİ SATIR ===
+// Gelen her istekte kimlik doğrulama yapılıp yapılmadığını kontrol et
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+// === YENİ KOD BLOĞU BAŞLANGICI ===
+// Veritabanı migration'larını uygulama başlangıcında otomatik uygula
+try
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+        db.Database.Migrate();
+    }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred during migration");
+}
+// === YENİ KOD BLOĞU SONU ===
+
+app.Run();

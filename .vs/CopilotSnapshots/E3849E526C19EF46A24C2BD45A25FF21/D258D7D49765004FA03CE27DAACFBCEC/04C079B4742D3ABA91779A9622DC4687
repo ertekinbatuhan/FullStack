@@ -1,0 +1,28 @@
+﻿@AuthAPI_HostAddress = https://localhost:7188
+# Azure Production URL: https://your-app-name.azurewebsites.net
+
+### Register a new user
+POST {{AuthAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword123"
+}
+
+### Login with an existing user
+POST {{AuthAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",  
+  "password": "testpassword123"
+}
+
+### Test protected endpoint WITHOUT token (should fail with 401)
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+
+### Test protected endpoint WITH token
+# Replace YOUR_JWT_TOKEN_HERE with actual token from login response
+GET {{AuthAPI_HostAddress}}/api/auth/protected
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
