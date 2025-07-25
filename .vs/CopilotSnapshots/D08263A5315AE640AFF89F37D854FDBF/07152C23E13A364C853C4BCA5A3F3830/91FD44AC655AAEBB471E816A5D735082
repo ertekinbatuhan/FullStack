@@ -27,8 +27,16 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            // Production için Azure domain'inizi ekleyin
-            policy.WithOrigins("https://your-azure-app-name.azurewebsites.net")
+            // Retrieve Azure domain from environment variable or configuration
+            var azureDomain = Environment.GetEnvironmentVariable("AZURE_DOMAIN") 
+                ?? builder.Configuration.GetSection("AppSettings:AzureDomain").Value;
+
+            if (string.IsNullOrEmpty(azureDomain))
+            {
+                throw new InvalidOperationException("Azure domain is not configured. Please set AZURE_DOMAIN environment variable or AppSettings:AzureDomain in configuration.");
+            }
+
+            policy.WithOrigins(azureDomain)
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         }
