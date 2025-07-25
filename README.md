@@ -1,4 +1,46 @@
-﻿<div align="center">
+
+<table>
+  <tr>
+    <th align="center">Sign In Screen</th>
+    <th align="center"> Sign Up Screen</th>
+    <th align="center">Email Verification Screen</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/48d8f426-ce43-475c-99c9-14b6e4e39cbd" width="200" alt="Ekran 3"/>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/1fd04662-9a0c-4fa9-a4fc-8aca75917f46" width="200" alt="Ekran 4"/>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/9449688f-d108-4216-aec3-f35e14efc17c" width="200" alt="Ekran 6"/>
+    </td>
+  </tr>
+  <tr>
+    <th align="center">Forgot Password Screen</th>
+    <th align="center">Email Verification Screen</th>
+    <th align="center">Reset Password Screen</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/5e0a8cd0-fc25-449b-92c0-e996dd45ff0a" width="200" alt="Ekran 1"/>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/26011275-8cb5-4456-9cb3-dea8040c7372" width="200" alt="Ekran 2"/>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/3b2377d2-bcf9-45c0-a49c-d68d5303a576" width="200" alt="Ekran 5"/>
+    </td>
+  </tr>
+</table>
+
+
+
+
+
+
+ 
+ <div align="center">
 
 # 🔐 AuthAPI
 
