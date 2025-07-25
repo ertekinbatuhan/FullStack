@@ -121,15 +121,9 @@ namespace AuthAPI.Controllers
 
                 if (!result)
                 {
+                    _logger.LogWarning("Invalid or expired verification token. Debug info: OriginalTokenReceived={OriginalTokenReceived}, DecodedToken={DecodedToken}, FixedToken={FixedToken}, Timestamp={Timestamp}", token, decodedToken, fixedToken, DateTime.UtcNow);
                     return BadRequest(new { 
-                        message = "Invalid or expired verification token.",
-                        debug = new {
-                            originalTokenReceived = token,
-                            decodedToken = decodedToken,
-                            fixedToken = fixedToken,
-                            timestamp = DateTime.UtcNow,
-                            note = "Check server logs for detailed information"
-                        }
+                        message = "Invalid or expired verification token."
                     });
                 }
 
