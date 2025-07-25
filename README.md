@@ -34,6 +34,128 @@
   </tr>
 </table>
 
+---
+
+## 📱 iOS Client Application
+
+The iOS client application is built using **SwiftUI** and follows the **MVVM (Model-View-ViewModel)** architecture pattern. It provides a modern, native iOS interface for the AuthAPI backend.
+
+### 🛠️ iOS Technology Stack
+
+<div align="center">
+
+| Frontend | Architecture | Network | UI Framework |
+|----------|--------------|---------|--------------|
+| ![SwiftUI](https://img.shields.io/badge/SwiftUI-007ACC?style=for-the-badge&logo=swift&logoColor=white) | ![MVVM](https://img.shields.io/badge/MVVM-Architecture-green?style=for-the-badge) | ![URLSession](https://img.shields.io/badge/URLSession-Native-blue?style=for-the-badge) | ![Async/Await](https://img.shields.io/badge/Async/Await-Modern-purple?style=for-the-badge) |
+
+</div>
+
+### ✨ iOS Features
+
+| Feature | Description | Status |
+|---------|-------------|---------|
+| 🔐 **User Authentication** | Login with email and password | ✅ Implemented |
+| 👤 **User Registration** | Sign up with email verification | ✅ Implemented |
+| 📧 **Email Verification** | Email verification status checking | ✅ Implemented |
+| 🔑 **Password Reset** | Forgot password functionality | ✅ Implemented |
+| 🎨 **Modern UI** | SwiftUI with gradient backgrounds | ✅ Implemented |
+| ⚡ **Async Operations** | Modern async/await networking | ✅ Implemented |
+| 🛡️ **Input Validation** | Real-time form validation | ✅ Implemented |
+| 🔄 **Loading States** | Progressive loading indicators | ✅ Implemented |
+
+### 🚀 iOS Setup & Installation
+
+#### Prerequisites
+
+- **Xcode 15.0+** - [Download from App Store](https://apps.apple.com/app/xcode/id497799835)
+- **iOS 16.0+** - Target deployment
+- **macOS Monterey 12.0+** - Development environment
+
+#### 📦 Installation Steps
+
+```bash
+# 1. Clone the repository
+git clone [repository-url]
+cd FullStack/IOS
+
+# 2. Open Xcode project
+open LoginUI.xcodeproj
+
+# 3. Build and run on simulator or device
+```
+
+#### ⚙️ Configuration
+
+**API Endpoint Configuration:**
+
+Edit `AuthEndpoint.swift` to point to your API server:
+
+```swift
+struct APIConstants {
+    // Production (Azure)
+    static let baseURL = "https://login-auth-api-azgnaec5ahavgths.westeurope-01.azurewebsites.net/api"
+    
+    // Local development
+    // static let baseURL = "https://localhost:7045/api"
+}
+```
+
+### 📱 iOS Screens
+
+#### 🔐 Sign In Screen
+- Email and password input fields
+- Real-time validation
+- Loading states during authentication
+- Navigation to forgot password
+
+#### 👤 Sign Up Screen
+- User registration form
+- Password strength validation
+- Email format validation
+- Navigation to email verification
+
+#### 📧 Email Verification Screen
+- Email verification status checking
+- Resend verification email
+- Real-time status updates
+
+#### 🔑 Forgot Password Screen
+- Password reset request
+- Email validation
+- Success/error feedback
+
+#### 🏠 Home Screen
+- Protected content display
+- User authentication status
+- Welcome message
+
+### 🏗️ iOS Project Structure
+
+```
+IOS/LoginUI/
+├── LoginUIApp.swift              # Main app entry point
+├── View/                         # SwiftUI Views
+│   ├── SignIn/                   # Login screens
+│   ├── SignUp/                   # Registration screens
+│   └── Home/                     # Protected content
+├── Models/                       # Data models
+├── Network/                      # API communication
+├── Core/Service/                 # Authentication service
+└── Components/                   # Reusable UI components
+```
+
+### 🔗 iOS-Backend Integration
+
+The iOS app communicates with the .NET backend through REST API calls:
+
+**Supported Endpoints:**
+- `POST /auth/login` - User authentication
+- `POST /auth/register` - User registration
+- `POST /auth/check-email-status` - Email verification status
+- `POST /auth/forgot-password` - Password reset request
+- `POST /auth/reset-password` - Password reset completion
+
+---
 
 
 
