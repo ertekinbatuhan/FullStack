@@ -121,16 +121,25 @@ namespace AuthAPI.Controllers
 
                 if (!result)
                 {
-                    return BadRequest(new { 
-                        message = "Invalid or expired verification token.",
-                        debug = new {
-                            originalTokenReceived = token,
-                            decodedToken = decodedToken,
-                            fixedToken = fixedToken,
-                            timestamp = DateTime.UtcNow,
-                            note = "Check server logs for detailed information"
-                        }
-                    });
+                    var response = new { 
+                        message = "Invalid or expired verification token."
+                    };
+
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
+                    {
+                        response = new {
+                            message = "Invalid or expired verification token.",
+                            debug = new {
+                                originalTokenReceived = token,
+                                decodedToken = decodedToken,
+                                fixedToken = fixedToken,
+                                timestamp = DateTime.UtcNow,
+                                note = "Check server logs for detailed information"
+                            }
+                        };
+                    }
+
+                    return BadRequest(response);
                 }
 
                 return Ok(new { message = "Email verified successfully. You can now log in to your account." });
