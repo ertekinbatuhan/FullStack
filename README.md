@@ -1,4 +1,4 @@
-
+ 
 <div align="center">
 
 # 📱 iOS Client Application
@@ -62,7 +62,7 @@ The iOS client application is a **modern, native interface** built using **Swift
   </tr>
   <tr>
     <td align="center">
-      <img src="https://github.com/user-attachments/assets/7fc29458-f3a4-4e03-a7fe-450a8cc0750f" width="200" alt="Ekran 1"/>
+      <img src="https://github.com/user-attachments/assets/8ef912c2-7cff-4d3d-9a6d-a8ca243abae4" width="200" alt="Ekran 1"/>
     </td>
     <td align="center">
       <img src="https://github.com/user-attachments/assets/5e0a8cd0-fc25-449b-92c0-e996dd45ff0a" width="200" alt="Ekran 2"/>
@@ -72,6 +72,7 @@ The iOS client application is a **modern, native interface** built using **Swift
     </td>
   </tr>
 </table>
+
 
 ---
 
