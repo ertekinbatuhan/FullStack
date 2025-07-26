@@ -176,8 +176,93 @@ IOS/LoginUI/
 ├── Models/                       # Data models
 ├── Network/                      # API communication
 ├── Core/Service/                 # Authentication service
-└── Components/                   # Reusable UI components
+├── Components/                   # Reusable UI components
+└── LoginUITests/                 # Unit tests
+    └── LoginUITests.swift        # Test implementations
 ```
+
+### 🧪 iOS Unit Testing
+
+The iOS application includes comprehensive unit tests to ensure code quality and reliability. The test suite covers both **AuthService** layer and **ViewModel** layer testing with mock implementations.
+
+#### 📊 Test Coverage
+
+| Component | Test Cases | Coverage |
+|-----------|------------|----------|
+| **AuthService** | 6 test cases | Authentication API calls |
+| **SignInViewModel** | 4 test cases | Login flow validation |
+| **SignUpViewModel** | 5 test cases | Registration flow validation |
+| **Mock Infrastructure** | Full mocking | Network layer abstraction |
+
+#### 🔧 Test Infrastructure
+
+**Mock Components:**
+- `MockNetworkManager` - Network layer mocking
+- `AuthError` extension - Error comparison support
+- Async/await testing - Modern Swift concurrency testing
+
+#### 📝 AuthService Tests
+
+| Test Case | Description | Validation |
+|-----------|-------------|------------|
+| `testAuthServiceLoginSuccess` | Successful user login | Token validation |
+| `testAuthServiceLoginFailure` | Failed login attempt | Error handling |
+| `testAuthServiceRegisterSuccess` | Successful registration | Response validation |
+| `testAuthServiceForgotPasswordSuccess` | Password reset request | Message validation |
+| `testAuthServiceResetPasswordSuccess` | Password reset completion | Success confirmation |
+| `testAuthServiceCheckEmailStatusSuccess` | Email status checking | Status validation |
+
+#### 📱 ViewModel Tests
+
+**SignInViewModel Tests:**
+- ✅ Successful login flow
+- ✅ Failed login with invalid credentials
+- ✅ Empty email validation
+- ✅ Empty password validation
+
+**SignUpViewModel Tests:**
+- ✅ Successful registration flow
+- ✅ Password mismatch validation
+- ✅ Invalid email format validation
+- ✅ Weak password validation
+- ✅ Empty email validation
+
+#### 🚀 Running Tests
+
+**Xcode:**
+```bash
+# Run all tests
+Cmd + U
+
+# Run specific test class
+Cmd + Control + Option + U
+```
+
+**Command Line:**
+```bash
+# Navigate to iOS project
+cd IOS
+
+# Run all tests
+xcodebuild test -scheme LoginUI -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'
+
+# Run tests with coverage
+xcodebuild test -scheme LoginUI -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' -enableCodeCoverage YES
+```
+
+#### 🎯 Test Philosophy
+
+The test suite follows **AAA (Arrange-Act-Assert)** pattern:
+- **Arrange:** Set up mock data and dependencies
+- **Act:** Execute the function under test
+- **Assert:** Verify expected outcomes
+
+**Key Testing Principles:**
+- ✅ **Isolation:** Each test is independent
+- ✅ **Mocking:** External dependencies are mocked
+- ✅ **Async Testing:** Proper async/await testing
+- ✅ **Error Scenarios:** Both success and failure paths tested
+- ✅ **Validation Logic:** Form validation thoroughly tested
 
 ### 🔗 iOS-Backend Integration
 
