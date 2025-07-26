@@ -8,10 +8,16 @@
 import SwiftUI
 import Foundation
 
+// MARK: - SignInViewModelProtocol
+/// Protocol defining the interface for SignInViewModel
+protocol SignInViewModelProtocol {
+    func login() async -> Bool
+}
+
 // MARK: - SignInViewModel
 /// ViewModel responsible for handling user authentication and sign-in logic
 @MainActor
-final class SignInViewModel: ObservableObject {
+final class SignInViewModel: ObservableObject, SignInViewModelProtocol {
     
     // MARK: - Published Properties (Form Inputs)
     @Published var email: String = ""

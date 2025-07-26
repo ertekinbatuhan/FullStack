@@ -7,10 +7,19 @@
 
 import SwiftUI
 
+// MARK: - SignUpViewModelProtocol
+/// Protocol defining the actions for SignUpViewModel
+@MainActor
+protocol SignUpViewModelProtocol {
+    func register() async -> Bool
+    func startEmailVerificationPolling()
+    func checkEmailStatusManually() async
+    func stopEmailVerificationPolling()
+}
 // MARK: - SignUpViewModel
 /// ViewModel responsible for handling user registration and sign-up logic
 @MainActor
-final class SignUpViewModel: ObservableObject {
+final class SignUpViewModel: ObservableObject, SignUpViewModelProtocol {
     
     // MARK: - Published Properties (Form Inputs & States)
     @Published var email: String = ""
