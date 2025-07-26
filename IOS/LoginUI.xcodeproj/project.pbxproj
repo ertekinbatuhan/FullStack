@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		C0883B212E34F78C0044A8CE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C057826F2E3121B000C1BF6C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C05782762E3121B000C1BF6C;
+			remoteInfo = LoginUI;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		C05782772E3121B000C1BF6C /* LoginUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LoginUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0883B1D2E34F78C0044A8CE /* LoginUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LoginUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -16,10 +27,22 @@
 			path = LoginUI;
 			sourceTree = "<group>";
 		};
+		C0883B1E2E34F78C0044A8CE /* LoginUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = LoginUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		C05782742E3121B000C1BF6C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0883B1A2E34F78C0044A8CE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -33,6 +56,7 @@
 			isa = PBXGroup;
 			children = (
 				C05782792E3121B000C1BF6C /* LoginUI */,
+				C0883B1E2E34F78C0044A8CE /* LoginUITests */,
 				C05782782E3121B000C1BF6C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				C05782772E3121B000C1BF6C /* LoginUI.app */,
+				C0883B1D2E34F78C0044A8CE /* LoginUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +95,29 @@
 			productReference = C05782772E3121B000C1BF6C /* LoginUI.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C0883B1C2E34F78C0044A8CE /* LoginUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C0883B252E34F78C0044A8CE /* Build configuration list for PBXNativeTarget "LoginUITests" */;
+			buildPhases = (
+				C0883B192E34F78C0044A8CE /* Sources */,
+				C0883B1A2E34F78C0044A8CE /* Frameworks */,
+				C0883B1B2E34F78C0044A8CE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C0883B222E34F78C0044A8CE /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				C0883B1E2E34F78C0044A8CE /* LoginUITests */,
+			);
+			name = LoginUITests;
+			packageProductDependencies = (
+			);
+			productName = LoginUITests;
+			productReference = C0883B1D2E34F78C0044A8CE /* LoginUITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -82,6 +130,10 @@
 				TargetAttributes = {
 					C05782762E3121B000C1BF6C = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					C0883B1C2E34F78C0044A8CE = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = C05782762E3121B000C1BF6C;
 					};
 				};
 			};
@@ -100,12 +152,20 @@
 			projectRoot = "";
 			targets = (
 				C05782762E3121B000C1BF6C /* LoginUI */,
+				C0883B1C2E34F78C0044A8CE /* LoginUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		C05782752E3121B000C1BF6C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C0883B1B2E34F78C0044A8CE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +182,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C0883B192E34F78C0044A8CE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C0883B222E34F78C0044A8CE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C05782762E3121B000C1BF6C /* LoginUI */;
+			targetProxy = C0883B212E34F78C0044A8CE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C05782842E3121B100C1BF6C /* Debug */ = {
@@ -317,6 +392,47 @@
 			};
 			name = Release;
 		};
+		C0883B232E34F78C0044A8CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PQ82KF7KP4;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.batuhanberkertekin.LoginUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LoginUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LoginUI";
+			};
+			name = Debug;
+		};
+		C0883B242E34F78C0044A8CE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PQ82KF7KP4;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.batuhanberkertekin.LoginUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LoginUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LoginUI";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -334,6 +450,15 @@
 			buildConfigurations = (
 				C05782872E3121B100C1BF6C /* Debug */,
 				C05782882E3121B100C1BF6C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C0883B252E34F78C0044A8CE /* Build configuration list for PBXNativeTarget "LoginUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0883B232E34F78C0044A8CE /* Debug */,
+				C0883B242E34F78C0044A8CE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
