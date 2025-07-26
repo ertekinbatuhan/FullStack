@@ -7,67 +7,62 @@
 
 import SwiftUI
 
+// MARK: - SignUpViewModel
 /// ViewModel responsible for handling user registration and sign-up logic
 @MainActor
 final class SignUpViewModel: ObservableObject {
-    // MARK: - Published Properties
+    
+    // MARK: - Published Properties (Form Inputs & States)
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
     @Published var isPasswordVisible: Bool = false
     @Published var isConfirmPasswordVisible: Bool = false
-    @Published private(set) var isLoading: Bool = false
-    @Published private(set) var errorMessage: String? = nil
     @Published var isWaitingForVerification: Bool = false
     @Published var isEmailVerified: Bool = false
     @Published var registrationSuccess: Bool = false
-    private var verificationTask: Task<Void, Never>? = nil
-    
+
+    // MARK: - Published Properties (Read-Only States)
+    @Published private(set) var isLoading: Bool = false
+    @Published private(set) var errorMessage: String? = nil
+
     // MARK: - Private Properties
-    
-    /// Network service instance for API requests (protocol)
+    private var verificationTask: Task<Void, Never>? = nil
     private let authService: AuthServiceProtocol
-    
+
+    // MARK: - Init
     /// Initializes the view model with an auth service dependency.
     /// - Parameter authService: The auth service to use (must be provided explicitly).
     init(authService: AuthServiceProtocol) {
         self.authService = authService
     }
-    
-    // MARK: - Private Methods
-    
-    // Email and password validation are now handled by ValidationUtils
-    
-    // MARK: - Public Methods
-    
+
+    // MARK: - Registration Logic
     /// Performs user registration with validation
     /// - Returns: Boolean indicating registration success
     func register() async -> Bool {
-        // E-mail validation
         guard Validator.isValidEmail(email) else {
             errorMessage = AuthError.invalidEmail.errorDescription
             registrationSuccess = false
             return false
         }
-        
-        // Password validation
+
         guard Validator.isValidPassword(password) else {
             errorMessage = AuthError.invalidPassword.errorDescription
             registrationSuccess = false
             return false
         }
-        
-        // Password confirmation
+
         guard password == confirmPassword else {
             errorMessage = AuthError.passwordsDoNotMatch.errorDescription
             registrationSuccess = false
             return false
         }
-        
+
         isLoading = true
         errorMessage = nil
         registrationSuccess = false
-        
+
         do {
             let response = try await authService.register(email: email, password: password)
             registrationSuccess = true
@@ -95,10 +90,10 @@ final class SignUpViewModel: ObservableObject {
             return false
         }
     }
+
+    // MARK: - Email Verification Polling
     
     /// Starts polling the backend to check if the user's email has been verified.
-    /// This function launches a background task that checks the email verification status every 2 seconds.
-    /// When the email is verified, polling stops and the UI can react (e.g., navigate to Home).
     func startEmailVerificationPolling() {
         isWaitingForVerification = true
         isEmailVerified = false
@@ -113,15 +108,14 @@ final class SignUpViewModel: ObservableObject {
                         break
                     }
                 } catch {
-                    
+                    // Silent catch — optionally log
                 }
                 try? await Task.sleep(nanoseconds: 2_000_000_000)
             }
         }
     }
-    
+
     /// One-time manual email verification check
-    @MainActor
     func checkEmailStatusManually() async {
         do {
             let response = try await authService.checkEmailStatus(email: email)
@@ -130,11 +124,13 @@ final class SignUpViewModel: ObservableObject {
                 isWaitingForVerification = false
             }
         } catch {
+            // Silent catch — optionally log
         }
     }
+
     /// Stops the email verification polling task and resets waiting state.
     func stopEmailVerificationPolling() {
         verificationTask?.cancel()
         isWaitingForVerification = false
     }
-} 
+}

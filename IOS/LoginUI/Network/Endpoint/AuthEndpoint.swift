@@ -7,10 +7,14 @@
 
 import Foundation
 
+// MARK: - APIConstants
 /// API configuration constants
 struct APIConstants {
+    
+    // MARK: Base URL
     static let baseURL = "https://login-auth-api-azgnaec5ahavgths.westeurope-01.azurewebsites.net/api"
     
+    // MARK: Endpoints
     struct Endpoints {
         static let login = "\(baseURL)/auth/login"
         static let register = "\(baseURL)/auth/register"
@@ -19,6 +23,7 @@ struct APIConstants {
         static let resetPassword = "\(baseURL)/auth/reset-password"
     }
     
+    // MARK: Headers
     struct Headers {
         static let contentType = "Content-Type"
         static let applicationJSON = "application/json"

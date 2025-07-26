@@ -7,8 +7,11 @@
 
 import Foundation
 
+// MARK: - AuthError
 /// Authentication related error cases
 enum AuthError: Error, LocalizedError {
+    
+    // MARK: Error Cases
     case invalidURL
     case decodingError(Error)
     case passwordsDoNotMatch
@@ -20,6 +23,7 @@ enum AuthError: Error, LocalizedError {
     case serverError(String)
     case unknown
     
+    // MARK: LocalizedError
     var errorDescription: String? {
         switch self {
         case .invalidURL:

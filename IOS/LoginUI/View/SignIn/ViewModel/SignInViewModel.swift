@@ -8,29 +8,31 @@
 import SwiftUI
 import Foundation
 
+// MARK: - SignInViewModel
 /// ViewModel responsible for handling user authentication and sign-in logic
 @MainActor
 final class SignInViewModel: ObservableObject {
-    // MARK: - Published Properties
+    
+    // MARK: - Published Properties (Form Inputs)
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var isPasswordVisible: Bool = false
+
+    // MARK: - Published Properties (State)
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var errorMessage: String? = nil
-    
+
     // MARK: - Private Properties
-    
-    /// Network service instance for API requests (protocol)
     private let authService: AuthServiceProtocol
-    
+
+    // MARK: - Init
     /// Initializes the view model with an auth service dependency.
     /// - Parameter authService: The auth service to use (must be provided explicitly).
     init(authService: AuthServiceProtocol) {
         self.authService = authService
     }
-    
-    // MARK: - Public Methods
-    
+
+    // MARK: - Authentication Logic
     /// Performs user authentication with username and password
     /// - Returns: Boolean indicating login success
     func login() async -> Bool {
@@ -39,17 +41,17 @@ final class SignInViewModel: ObservableObject {
             errorMessage = "Please enter e-mail"
             return false
         }
-        
+
         guard !password.isEmpty else {
             errorMessage = "Please enter password"
             return false
         }
-        
+
         isLoading = true
         errorMessage = nil
-        
+
         do {
-            let response = try await authService.login(email: email, password: password)
+            let _ = try await authService.login(email: email, password: password)
             isLoading = false
             return true
         } catch let authError as AuthError {
@@ -68,4 +70,4 @@ final class SignInViewModel: ObservableObject {
             return false
         }
     }
-} 
+}
